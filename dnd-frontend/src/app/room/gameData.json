@@ -1,0 +1,41 @@
+{
+    "game": {
+        "characters": [
+        {
+            "name": "Aelia",
+            "health": 40,
+            "maxHealth": 40,
+            "position": 0,
+            "type": "PC"
+        },
+        {
+            "name": "Thad",
+            "health": 40,
+            "maxHealth": 40,
+            "position": 1,
+            "type": "PC"
+        },
+        {
+            "name": "Oz",
+            "health": 40,
+            "maxHealth": 40,
+            "position": 2,
+            "type": "PC"
+        },
+        {
+            "name": "Lo",
+            "health": 40,
+            "maxHealth": 40,
+            "position": 3,
+            "type": "PC"
+        },
+        {
+            "name": "Alistair",
+            "health": 40,
+            "maxHealth": 40,
+            "position": 4,
+            "type": "PC"
+        }]
+    },
+    "messages": []
+}

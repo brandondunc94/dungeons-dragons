@@ -1,0 +1,15 @@
+
+    <div *ngIf='!isPlaying' class='row fill'>
+        <div class='col'>
+            <label for="room-code">Room Code</label>
+            <input type="text" #roomCode id="room-code" name="room-code">
+            <input type="button" (click)='joinRoom(roomCode.value)' value="Join Room">
+        </div>
+    </div>
+    <app-room *ngIf='isPlaying'
+    [username]='username'>
+    </app-room>
+
+
+
+

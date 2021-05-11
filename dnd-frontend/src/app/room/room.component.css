@@ -1,0 +1,239 @@
+.map {
+    background-color: #2f323b;
+    display: grid;
+    max-height: 100%;
+    overflow: scroll;
+    cursor: grab;
+}
+
+.map-square {
+    color:white; 
+    border-right: 1px solid white; 
+    border-bottom: 1px solid white; 
+    display: inline-block; 
+    position: relative;
+}
+
+.map-character {
+    height: 80%; 
+    width: 80%; 
+    background-color: #2671ff; 
+    border-radius: 50%; 
+    margin: 0 auto; 
+    margin-top: 5px; 
+    text-align: center; 
+    line-height: 4;
+}
+
+.dndDragover {
+    background-color: #6cae75;
+    color: black;
+}
+
+/*Stats and chat column styles*/
+.stats-chat {
+    padding-right: 0 !important;
+    color: white;
+    height: 100vh;
+}
+
+.stats-box {
+    height: 50%;
+    background-color: #2f323b;
+    border-bottom: 1px solid #2671ff;
+    color: white;
+}
+
+/* Chat box styles*/
+.chat-box {
+    width: auto;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
+}
+.chat-window {
+    flex: auto;
+    max-height: calc(100% - 60px);
+    background: #2f323b;
+    overflow: auto;
+    padding-top: 10px;
+}
+.chat-input {
+    flex: 0 0 auto;
+    height: 60px;
+    background: #40434e;
+    border-top: 1px solid #2671ff;
+    box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
+}
+.chat-input input {
+    height: 59px;
+    line-height: 60px;
+    outline: 0 none;
+    border: none;
+    width: calc(100% - 60px);
+    color: white;
+    text-indent: 10px;
+    font-size: 12pt;
+    padding: 0;
+    background: #40434e;
+}
+.chat-input input[good] + button {
+    box-shadow: 0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
+    background: #2671ff;
+}
+.chat-input input[good] + button:hover {
+    box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+.chat-input input[good] + button path {
+    fill: white;
+}
+.msg-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin: 0 0 10px 0;
+    padding: 0;
+}
+.msg-box {
+    display: flex;
+    background: #5b5e6c;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0 6px 6px 0;
+    max-width: 80%;
+    width: auto;
+    float: left;
+    box-shadow: 0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
+}
+.user-img {
+    display: inline-block;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    background: #2671ff;
+    justify-content: center;
+}
+.flr {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 50px);
+}
+.messages {
+    flex: 1 0 auto;
+}
+.msg {
+    display: inline-block;
+    font-size: 11pt;
+    line-height: 13pt;
+    color: white;
+    margin: 0 0 4px 0;
+}
+.msg:first-of-type {
+    margin-top: 8px;
+}
+.timestamp {
+    color: rgba(255,255,255,.7);
+    font-size: 8pt;
+    margin-bottom: 10px;
+}
+.username {
+    margin-right: 3px;
+}
+.posttime {
+    margin-left: 3px;
+}
+.msg-self .msg-box {
+    border-radius: 6px 0 0 6px;
+    background: #2671ff;
+    float: right;
+}
+.msg-self {
+    margin-bottom: 0 0 10px 0;
+}
+.msg-self .msg {
+    text-align: right;
+}
+
+.msg-self .timestamp {
+    text-align: right;
+}
+
+/*Message Button Style*/
+.send-btn {
+	width: 100px;
+	height: 100px;
+    border: none;
+    color: inherit;
+    background: none;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 300;
+    outline: none;
+    position: absolute;
+    margin: auto;
+    outline: 0 none;
+    background: rgba(255,255,255,.25);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    padding: 2px 0 0 0;
+    margin: 10px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+}
+
+.send-btn img{
+    margin: auto;
+}
+
+.bg {
+    height: 32px;
+    width: 32px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+/* Character stats display*/
+.card {
+    width: 70%;
+    border-radius: 10px;
+    background-color: #fff;
+    color: black;
+    height: 60px;
+    margin: 0 auto;
+    margin-bottom: 10px; /*This must come after margin: 0 auto */
+}
+
+.character-image {
+    max-width: 30px;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+/* Action panel styles */
+.action-panel {
+    background-color: #40434e;
+    color: white;
+}
+
+.save-btn {
+    background-color: #6cae75;
+    color: white;
+}
+
+.add-character-btn {
+    background-color: #6cae75;
+    color: white;
+}
+
+.disconnect-btn {
+    background-color: red;
+    color: white;
+}

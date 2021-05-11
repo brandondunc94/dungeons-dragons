@@ -1,0 +1,61 @@
+<div class='row h-100'>
+    <div class="col-3 p-0 stats-chat">
+        <div class='stats-box'>
+            <h5 class='text-center'>Characters</h5>
+            <div *ngFor='let character of roomData.game.characters' class="card p-2">
+                <div class="d-flex align-items-center">
+                    <div> <img src="//gravatar.com/avatar/00034587632094500000000000000000?d=retro" class="character-image"> </div>
+                    <div class="ml-2">
+                        <h6 class="mb-0">{{character.name}}</h6> 
+                        <progress value="{{character.health}}" max="{{character.maxHealth}}"></progress>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="chat-box">
+            <section class="chat-window">
+                <h5 class='text-center'>Chat</h5>
+                <article *ngFor='let message of roomData.messages' [ngClass]="{'msg-self' : (message.author === username)}" class="msg-container" id="msg-0">
+                    <div class="msg-box">
+                        <img class="user-img my-auto" id="user-0" src="//gravatar.com/avatar/00034587632094500000000000000000?d=retro" />
+                        <div class="flr">
+                            <div class="messages">
+                                <p class="msg" id="msg-0">{{message.message}}</p>
+                            </div>
+                            <span class="timestamp"><span class="username">{{message.author}}</span>&bull;<span class="posttime">{{message.dateTime|date:'shortTime'}}</span></span>
+                        </div>
+                    </div>
+                </article>
+            </section>
+            <section class="chat-input">
+                <input type="text" placeholder="Type a message" #messageInputField id="room-code" name="room-code"/>
+                <button (keyup.enter)='sendMessage(messageInputField.value)' (click)='sendMessage(messageInputField.value)' class="send-btn"><img src="https://i.cloudup.com/gBzAn-oW_S-2000x2000.png" width="30px" height="30px"></button>
+            </section>
+        </section>
+    </div>
+    <section #map class="col-8 p-0 map grid dndDragzone">
+        <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]="squareSideLength" class='map-square' [dndDropzone] (dndDrop)="onCharacterDrop($event,i)">
+            <ng-container *ngFor='let character of roomData.game.characters'>
+                <div *ngIf='character.position === i' class='map-character'
+                [dndDraggable]="character"
+                (dndStart)="onDragStart($event)">{{character.name}}</div>
+            </ng-container>
+            <small style="position: absolute; bottom: 0; font-size: 10px;">{{i}}</small>
+        </div>
+    </section>
+    <div class='col-1 d-flex flex-column action-panel text-center'>
+        <h5 class='text-center'>Controls</h5>
+        <div class='flex-fill'>
+            <button type="button" class='mt-2 btn add-character-btn' (click)='saveGame()'>Add Character</button>
+        </div>
+        <button type="button" class='mb-2 btn save-btn' (click)='saveGame()'>Save Game</button>
+        <button type="button" class='mb-2 btn disconnect-btn' (click)='disconnect()'>Disconnect</button>
+
+
+    </div>
+</div>
+<!--<div class='row'>
+    <button (click)='disconnect()'>Disconnect</button>
+</div>-->
+
+

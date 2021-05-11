@@ -1,0 +1,2 @@
+// If else check setting css class
+(message.author === username)? 'msg-self' : 'msg-remote'
