@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { DndDropEvent } from 'ngx-drag-drop';
 import { RoomWebsocketService } from "../room-websocket.service";
+import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
+import { ModalComponent } from '../modal/modal.component';
 import { RoomService, RoomData, Character } from '../room-data.service';
 import * as jsonData from './gameData.json';
 
@@ -25,7 +27,7 @@ export class RoomComponent implements OnInit {
   mapDimension = 20;
   squareSideLength = 80;
 
-  constructor() { 
+  constructor(public matDialog: MatDialog) { 
     // this.messages = [];
     this.roomData = {
       game: {
@@ -96,6 +98,53 @@ export class RoomComponent implements OnInit {
     }
   }
 
+  openUpdateCharacterModel(character: Character) {
+    // Open dialog box
+    const dialogConfig = new MatDialogConfig();
+    // The user can't close the dialog by clicking outside its body
+    dialogConfig.disableClose = true;
+    dialogConfig.id = "modal-component";
+    dialogConfig.height = "400px";
+    dialogConfig.width = "600px";
+    dialogConfig.data = {
+      name: "update-character",
+      title: "Update Character",
+      actionButtonText: "Save",
+      character: character
+    }
+    // https://material.angular.io/components/dialog/overview
+    const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
+
+    modalDialog.afterClosed().subscribe(updatedCharacter => {
+      console.log('The dialog was closed');
+      character = updatedCharacter;
+    });
+
+  }
+
+  openNewCharacterModel() {
+    const dialogConfig = new MatDialogConfig();
+    
+    dialogConfig.disableClose = true; // The user can't close the dialog by clicking outside its body
+    dialogConfig.id = "modal-component";
+    dialogConfig.height = "400px";
+    dialogConfig.width = "600px";
+    dialogConfig.data = {
+      name: "new-character",
+      title: "Create New Character",
+      actionButtonText: "Create",
+    }
+    // https://material.angular.io/components/dialog/overview
+    const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
+
+    modalDialog.afterClosed().subscribe(newCharacter => {
+      console.log('The dialog was closed');
+      if(newCharacter.name) {
+        this.roomData.game.characters.push(newCharacter);
+      }
+    });
+  }
+
   // Chat methods
   sendMessage(message: string) {
     if (message != '') {
@@ -111,10 +160,10 @@ export class RoomComponent implements OnInit {
   }
 
   saveGame() {
-
+    // Save logic goes here, write to DB
   }
   
   disconnect() {
-    // Disconnect logic goes here
+    // Disconnect logic goes here, close web socket and return to home page
   }
 }

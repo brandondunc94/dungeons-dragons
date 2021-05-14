@@ -1,0 +1,29 @@
+<div id="modal-content-wrapper">
+    <header id="modal-header">
+        <h1 id="modal-title">{{ modalData.title }}</h1>
+    </header>
+    <section id="modal-body">
+        <div class="form-group">
+            <label>Name</label>
+            <input [(ngModel)]="character.name"  type="text" class="form-control" name='character-name' aria-describedby="characterName" placeholder="Name" [(ngModel)]="character.name">
+        </div>
+        <div class="form-group">
+            <label for="character-health">Health</label>
+            <input [(ngModel)]="character.health" type="number" class="form-control" name='character-health' aria-describedby="characterHealth" placeholder="0">
+        </div>
+        <div class="form-group">
+            <label for="character-position">Position</label>
+            <input [(ngModel)]="character.position" type="number" class="form-control" name='character-position' aria-describedby="characterPosition" placeholder="0">
+        </div>
+        <div class="form-group">
+            <label for="character-type">Type</label>
+            <input [(ngModel)]="character.type" type="number" class="form-control" name='character-type' aria-describedby="characterType" placeholder="NPC">
+        </div>
+    </section>
+    <footer id="modal-footer">
+        <button class='btn green-btn m-2' (click)="actionFunction()">{{modalData.actionButtonText}}</button>
+        <button class='btn white-btn' (click)="closeModal()">
+            Cancel
+        </button>
+    </footer>
+</div>

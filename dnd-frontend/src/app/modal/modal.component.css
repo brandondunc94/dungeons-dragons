@@ -1,0 +1,19 @@
+#modal-content-wrapper {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    color: white;
+}
+
+#modal-title {
+    font-size: 22px;
+}
+
+#modal-footer {
+    justify-self: right;
+    align-self: center;
+}
+
+#modal-body {
+    padding: 10;
+}

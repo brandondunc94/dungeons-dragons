@@ -1,12 +1,12 @@
 <div class='row h-100'>
     <div class="col-3 p-0 stats-chat">
         <div class='stats-box'>
-            <h5 class='text-center'>Characters</h5>
+            <h3 class='text-center'>Characters</h3>
             <div *ngFor='let character of roomData.game.characters' class="card p-2">
                 <div class="d-flex align-items-center">
                     <div> <img src="//gravatar.com/avatar/00034587632094500000000000000000?d=retro" class="character-image"> </div>
                     <div class="ml-2">
-                        <h6 class="mb-0">{{character.name}}</h6> 
+                        <h4 class="mb-0">{{character.name}}</h4> 
                         <progress value="{{character.health}}" max="{{character.maxHealth}}"></progress>
                     </div>
                 </div>
@@ -14,7 +14,7 @@
         </div>
         <section class="chat-box">
             <section class="chat-window">
-                <h5 class='text-center'>Chat</h5>
+                <h3 class='text-center'>Chat</h3>
                 <article *ngFor='let message of roomData.messages' [ngClass]="{'msg-self' : (message.author === username)}" class="msg-container" id="msg-0">
                     <div class="msg-box">
                         <img class="user-img my-auto" id="user-0" src="//gravatar.com/avatar/00034587632094500000000000000000?d=retro" />
@@ -38,7 +38,8 @@
             <ng-container *ngFor='let character of roomData.game.characters'>
                 <div *ngIf='character.position === i' class='map-character'
                 [dndDraggable]="character"
-                (dndStart)="onDragStart($event)">{{character.name}}</div>
+                (dndStart)="onDragStart($event)"
+                (dblclick)='openUpdateCharacterModel(character)'>{{character.name}}</div>
             </ng-container>
             <small style="position: absolute; bottom: 0; font-size: 10px;">{{i}}</small>
         </div>
@@ -46,12 +47,10 @@
     <div class='col-1 d-flex flex-column action-panel text-center'>
         <h5 class='text-center'>Controls</h5>
         <div class='flex-fill'>
-            <button type="button" class='mt-2 btn add-character-btn' (click)='saveGame()'>Add Character</button>
+            <button mat-raised-button id="logout-button" (click)="openNewCharacterModel()">New Character</button>
         </div>
-        <button type="button" class='mb-2 btn save-btn' (click)='saveGame()'>Save Game</button>
+        <button type="button" class='mb-2 btn green-btn' (click)='saveGame()'>Save Game</button>
         <button type="button" class='mb-2 btn disconnect-btn' (click)='disconnect()'>Disconnect</button>
-
-
     </div>
 </div>
 <!--<div class='row'>
