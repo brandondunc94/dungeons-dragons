@@ -1,4 +1,5 @@
 dnd-frontend/node_modules/
+dnd-frontend/dist/
 dnd-server/dev-env/
 dnd-server/db.sqlite3
 __pycache__/
