@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { RoomWebsocketService } from "./room-websocket.service";
 
 // const CHAT_URL = "ws://echo.websocket.org/";
-const CHAT_URL = "ws://127.0.0.1:8000/ws/play/1";
+const CHAT_URL = "ws://127.0.0.1:8001/ws/play/1";
 
 export interface RoomData {
   game: GameData,
