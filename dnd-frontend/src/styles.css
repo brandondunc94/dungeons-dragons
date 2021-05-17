@@ -11,14 +11,21 @@
 html, body {
   min-height: 100%;
   height: 100%;
+  overflow-x: hidden;
+}
+
+body, body * {
+  font-family: 'Girassol', cursive;
 }
 
 .fill { 
   min-height: 100%;
   height: 100%;
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+textarea:focus, input:focus{
+  outline: none;
+}
 
 /* Material Dialog style - All other dialgo styles are set in dialog.css*/
 .mat-dialog-container {

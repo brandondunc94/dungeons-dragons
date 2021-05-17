@@ -1,6 +1,7 @@
 import { Component, OnInit, Output } from '@angular/core';
 import { RoomWebsocketService } from "../room-websocket.service";
 import { RoomService } from "../room-data.service";
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-home',
@@ -10,23 +11,40 @@ import { RoomService } from "../room-data.service";
 })
 export class HomeComponent implements OnInit {
 
+  //Colors
+  crayolaBlue = '#2671ff';
+
   username!: string;
   roomCode!: string;
   isPlaying!: Boolean;
 
-  constructor() {
-    this.roomCode = '';
-    this.isPlaying = false;
-  }
+  constructor() {}
 
   ngOnInit(): void {
-    this.isPlaying = true;
-    this.username = 'Brandon'; // Update this later when implementing user accounts
+    // Production
+    this.isPlaying = false;
+
+    // Testing
+    // this.username = 'Brandon'; // Update this later when implementing user accounts
+    // this.isPlaying = true;
   }
 
-  joinRoom(roomCode: string) {
-    this.roomCode = roomCode;
-    console.log(this.roomCode);
+  joinRoom(roomCode: string, username: string) {
+    if (roomCode != '' && username != '') {
+      this.roomCode = roomCode;
+      this.username = username;
+  
+      console.log(username + ' joining room ' + this.roomCode);
+      this.isPlaying = true;
+    } else {
+      Swal.fire({
+        icon: 'error',
+        heightAuto: false,
+        confirmButtonColor: this.crayolaBlue,
+        text: 'Please enter a room code and username before joining room',
+      })
+    }
+
   }
 
 }

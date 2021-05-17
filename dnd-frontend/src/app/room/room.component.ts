@@ -14,9 +14,9 @@ import * as jsonData from './gameData.json';
 export class RoomComponent implements OnInit {
 
   @Input() username!: string; // Track current user
+  @Input() roomCode!: string;
   characters!: Array<Character>; // Track all characters in room
   
-  // messages: Array<Message>;
   roomData!: RoomData;
   @ViewChild('messageInputField') messageInputField!: ElementRef; // Reference to message input field in DOM
 
