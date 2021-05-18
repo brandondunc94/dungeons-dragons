@@ -15,7 +15,7 @@ html, body {
 }
 
 body, body * {
-  font-family: 'Girassol', cursive;
+  font-family: 'Girassol', cursive !important;
 }
 
 .fill { 
