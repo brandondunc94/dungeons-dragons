@@ -1,7 +1,10 @@
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RoomWebsocketService } from "../room-websocket.service";
 import { RoomService } from "../room-data.service";
 import Swal from 'sweetalert2';
+// import { trigger, state, style, transition, animate } from '@angular/animations'; 
+// import * as EventEmitter from 'node:events';
+// import * as EventEmitter from 'node:events';
 
 @Component({
   selector: 'app-home',
@@ -45,6 +48,10 @@ export class HomeComponent implements OnInit {
       })
     }
 
+  }
+
+  leaveRoom() {
+    this.isPlaying = false;
   }
 
 }

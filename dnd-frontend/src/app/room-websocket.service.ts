@@ -6,6 +6,8 @@ import * as Rx from "rxjs";
 })
 export class RoomWebsocketService {
 
+  websocket!: WebSocket;
+
   constructor() { }
 
   private subject!: Rx.Subject<MessageEvent>;
@@ -17,23 +19,29 @@ export class RoomWebsocketService {
     return this.subject;
   }
 
+  public disconnect() {
+    this.subject.unsubscribe(); // Drop subject and release memory
+    this.websocket.close(); // Diconnect web socket
+  }
+
   private create(url: string): Rx.Subject<MessageEvent> {
-    let ws = new WebSocket(url);
+    this.websocket = new WebSocket(url);
     console.log("Successfully connected to WebSocket: " + url);
     let observable = new Rx.Observable((obs: Rx.Observer<MessageEvent>) => {
-      ws.onmessage = obs.next.bind(obs);
-      ws.onerror = obs.error.bind(obs);
-      ws.onclose = obs.complete.bind(obs);
-      return ws.close.bind(ws);
+      this.websocket.onmessage = obs.next.bind(obs);
+      this.websocket.onerror = obs.error.bind(obs);
+      this.websocket.onclose = obs.complete.bind(obs);
+      return this.websocket.close.bind(this.websocket);
     });
     let observer = {
       next: (data: Object) => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify(data));
+        if (this.websocket.readyState === WebSocket.OPEN) {
+          this.websocket.send(JSON.stringify(data));
           console.log('Sending message ' + JSON.stringify(data));
         }
       }
     };
     return Rx.Subject.create(observer, observable);
   }
+
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { DndDropEvent } from 'ngx-drag-drop';
 import { RoomWebsocketService } from "../room-websocket.service";
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
@@ -15,6 +15,7 @@ export class RoomComponent implements OnInit {
 
   @Input() username!: string; // Track current user
   @Input() roomCode!: string;
+  @Output() isPlaying = new EventEmitter<boolean>();
   characters!: Array<Character>; // Track all characters in room
   
   roomData!: RoomData;
@@ -28,7 +29,6 @@ export class RoomComponent implements OnInit {
   squareSideLength = 80;
 
   constructor(public matDialog: MatDialog) { 
-    // this.messages = [];
     this.roomData = {
       game: {
         characters: []
@@ -36,7 +36,7 @@ export class RoomComponent implements OnInit {
       messages: []
     };
 
-    this.roomData = (jsonData as any).default;
+    this.roomData = (jsonData as any).default; // Update this with DB query
   }
 
   ngOnInit(): void {
@@ -160,10 +160,11 @@ export class RoomComponent implements OnInit {
   }
 
   saveGame() {
-    // Save logic goes here, write to DB
+    // Save logic goes here, write to DB or create json file and give to user
   }
   
   disconnect() {
-    // Disconnect logic goes here, close web socket and return to home page
+    this.wsService.disconnect();
+    this.isPlaying.emit(false); // Tell home component that the user is done playing
   }
 }

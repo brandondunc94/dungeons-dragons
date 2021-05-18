@@ -11,7 +11,8 @@
 </div>
 <app-room *ngIf='isPlaying'
         [username]='username'
-        [roomCode]='roomCode'>
+        [roomCode]='roomCode'
+        (isPlaying)='leaveRoom()'>
 </app-room>
 
 
