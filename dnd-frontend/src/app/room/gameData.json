@@ -35,6 +35,27 @@
             "maxHealth": 40,
             "position": 4,
             "type": "PC"
+        },
+        {
+            "name": "Goblin",
+            "health": 40,
+            "maxHealth": 40,
+            "position": 165,
+            "type": "NPC"
+        },
+        {
+            "name": "Goblin",
+            "health": 40,
+            "maxHealth": 40,
+            "position": 129,
+            "type": "NPC"
+        },
+        {
+            "name": "Goblin",
+            "health": 40,
+            "maxHealth": 40,
+            "position": 147,
+            "type": "NPC"
         }]
     },
     "messages": []

@@ -20,12 +20,12 @@ export interface Message {
   dateTime: Date;
 }
 
-export interface Character {
-  name: string,
-  health: number,
-  maxHealth: number,
-  position: number,
-  type: string // PC or NPC
+export class Character {
+  name!: string;
+  health!: number;
+  maxHealth!: number;
+  position!: number;
+  type!: string // PC or NPC
 }
 
 @Injectable()

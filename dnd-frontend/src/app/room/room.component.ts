@@ -17,7 +17,8 @@ export class RoomComponent implements OnInit {
   @Input() roomCode!: string;
   @Output() isPlaying = new EventEmitter<boolean>();
   characters!: Array<Character>; // Track all characters in room
-  
+  selectedCharacter!: Character | null;
+
   roomData!: RoomData;
   @ViewChild('messageInputField') messageInputField!: ElementRef; // Reference to message input field in DOM
 
@@ -49,7 +50,6 @@ export class RoomComponent implements OnInit {
       console.log("Received new data from websocket.");
     });
 
-    //this.getCharacters();
     this.createMapGrid();
   }
 
@@ -95,6 +95,14 @@ export class RoomComponent implements OnInit {
         }
       )
       position++;
+    }
+  }
+
+  selectCharacter(character: Character) {
+    if(this.selectedCharacter === character) {
+      this.selectedCharacter = null;
+    } else {
+      this.selectedCharacter = character;
     }
   }
 

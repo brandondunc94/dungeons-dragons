@@ -6,7 +6,6 @@
     cursor: grab;
     border: 1px solid grey !important; 
 }
-
 .map-square {
     color:white; 
     border-right: 1px solid grey; 
@@ -14,7 +13,6 @@
     display: inline-block; 
     position: relative;
 }
-
 .map-character {
     height: 80%; 
     width: 80%; 
@@ -25,7 +23,12 @@
     text-align: center; 
     line-height: 4;
 }
-
+.selected-map-character {
+    border: 3px solid gold;
+}
+.map-npc {
+    background-color: #c54;
+}
 .dndDragover {
     background-color: #6cae75;
     color: black;
@@ -39,16 +42,17 @@
 }
 
 .stats-box {
-    height: 50%;
+    height: 60%;
     background-color: #2f323b;
     border-bottom: 1px solid #2671ff;
     color: white;
+    overflow-y: scroll;
 }
 
 /* Chat box styles*/
 .chat-box {
     width: auto;
-    height: 50%;
+    height: 40%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -206,25 +210,32 @@
 .card {
     width: 70%;
     border-radius: 10px;
-    background-color: #fff;
+    background-color: white;
+    border: 3px solid #2671ff;
     color: black;
     height: 60px;
     margin: 0 auto;
     margin-bottom: 10px; /*This must come after margin: 0 auto */
+}
+.card-npc {
+    border: 3px solid #c54 !important;
+}
+.selected-character-card {
+    border: 3px solid gold;
 }
 .health-bar {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     width: 100%;
-    height: 20px;
+    height: 15px;
     padding: 5px;
     background: #ddd;
     border-radius: 5px;
   }
 .bar {
     background: #c54;
-    height: 80%;
+    height: 70%;
 } 
 
 /* Action panel styles */

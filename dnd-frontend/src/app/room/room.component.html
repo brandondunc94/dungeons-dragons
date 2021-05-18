@@ -2,7 +2,7 @@
     <div class='col-3 p-0 stats-chat'>
         <div class='stats-box'>
             <h2 class='text-center'>Characters</h2>
-            <div *ngFor='let character of roomData.game.characters' class='card p-2'>
+            <div *ngFor='let character of roomData.game.characters' class='card p-2' [ngClass]="{'card-npc' : character.type === 'NPC'}">
                 <div class='d-flex flex-column'>
                     <h4 class='mb-0'>{{character.name}}</h4> 
                     <div class='health-bar'>
@@ -36,10 +36,11 @@
     <section #map class='col-8 p-0 map grid dndDragzone'>
         <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone] (dndDrop)='onCharacterDrop($event,i)'>
             <ng-container *ngFor='let character of roomData.game.characters'>
-                <div *ngIf='character.position === i' class='map-character'
+                <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC'}"
                 [dndDraggable]='character'
                 (dndStart)='onDragStart($event)'
-                (dblclick)='openUpdateCharacterModel(character)'>{{character.name}}</div>
+                (dblclick)='openUpdateCharacterModel(character)'
+                (click)='selectCharacter(character)'>{{character.name}}</div>
             </ng-container>
             <small style='position: absolute; bottom: 0; font-size: 10px;'>{{i}}</small>
         </div>
