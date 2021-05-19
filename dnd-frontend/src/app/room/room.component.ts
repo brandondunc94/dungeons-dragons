@@ -153,6 +153,10 @@ export class RoomComponent implements OnInit {
     });
   }
 
+  setCharacterHealthDisplay(health: number, maxHealth: number) {
+    return (health/maxHealth) * 100;
+  }
+
   // Chat methods
   sendMessage(message: string) {
     if (message != '') {

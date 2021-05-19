@@ -2,11 +2,11 @@
     <div class='col-3 p-0 stats-chat'>
         <div class='stats-box'>
             <h2 class='text-center'>Characters</h2>
-            <div *ngFor='let character of roomData.game.characters' class='card p-2' [ngClass]="{'card-npc' : character.type === 'NPC'}">
+            <div *ngFor='let character of roomData.game.characters' class='card p-1' [ngClass]="{'card-npc' : character.type === 'NPC'}">
                 <div class='d-flex flex-column'>
                     <h4 class='mb-0'>{{character.name}}</h4> 
                     <div class='health-bar'>
-                        <div class='bar'>
+                        <div class='bar' [style.width.%]='setCharacterHealthDisplay(character.health, character.maxHealth)'>
                         </div>
                     </div>
                 </div>
