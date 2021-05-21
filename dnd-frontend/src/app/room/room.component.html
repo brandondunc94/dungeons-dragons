@@ -3,13 +3,20 @@
         <div class='stats-box'>
             <h2 class='text-center'>Characters</h2>
             <div *ngFor='let character of roomData.game.characters' class='card p-1' [ngClass]="{'card-npc' : character.type === 'NPC'}">
-                <div class='d-flex flex-column'>
+                <div class='d-flex flex-column' *ngIf='isDungeonMaster; else staticCard'>
                     <h4 class='mb-1'>{{character.name}}</h4> 
                     <div class='health-bar'>
                         <div class='bar' [style.width.%]='setCharacterHealthDisplay(character.health, character.maxHealth)'>
                         </div>
                     </div>
                 </div>
+                <ng-template class='d-flex flex-column' (click)='openUpdateCharacterModel(character)' #staticCard>
+                    <h4 class='mb-1'>{{character.name}}</h4> 
+                    <div class='health-bar'>
+                        <div class='bar' [style.width.%]='setCharacterHealthDisplay(character.health, character.maxHealth)'>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
         </div>
         <section class='chat-box'>
@@ -53,13 +60,13 @@
         <div class='flex-fill mt-3'>
         <h3>Dungeon Master</h3>
             <button type='button' [disabled]="!isDungeonMaster" class='btn add-character-btn mb-2' (click)='openNewCharacterModel()'>New Character</button>
+            <button type='button' [disabled]="!isDungeonMaster" class='btn save-button' (click)='saveGame()'>Save Game</button>
+            <div>
+                <h3 for="colorpicker" class='mb-0'>Map Background</h3>
+                <input type="color" id="colorpicker" name="mapColor" #mapColor value='#2f323b' (click)='updateMapBackground(mapColor.value)'>
+            </div>
         </div>
-        <div>
-            <h3 for="colorpicker" class='mb-0'>Map Background</h3>
-            <input type="color" id="colorpicker" name="mapColor" #mapColor value='#2f323b' (click)='updateMapBackground(mapColor.value)'>
-        </div>
-        <button type='button' class='m-2 btn green-btn' (click)='saveGame()'>Save Game</button>
-        <button type='button' class='m-2 btn disconnect-btn' (click)='disconnect()'>Disconnect</button>
+        <button type='button' class='m-2 btn btn-sm disconnect-btn' (click)='disconnect()'>Disconnect</button>
     </div>
 </div>
 
