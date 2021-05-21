@@ -14,8 +14,9 @@ import * as jsonData from './gameData.json';
 export class RoomComponent implements OnInit {
 
   @Input() username!: string; // Track current user
+  @Input() isDungeonMaster!: boolean;
   @Input() roomCode!: string;
-  @Output() isPlaying = new EventEmitter<boolean>();
+  @Output() isPlaying = new EventEmitter<boolean>(); // Used for going back to home splash page
   characters!: Array<Character>; // Track all characters in room
   selectedCharacter!: Character | null;
 
@@ -27,6 +28,7 @@ export class RoomComponent implements OnInit {
 
   @ViewChild('map', {static: true}) map!:ElementRef; // Reference to map in DOM
   mapDimension = 20;
+  mapColor = '#2f323b';
   squareSideLength = 80;
 
   constructor(public matDialog: MatDialog) { 
@@ -51,6 +53,7 @@ export class RoomComponent implements OnInit {
     });
 
     this.createMapGrid();
+    this.map.nativeElement.style.backgroundColor = '#2f323b';
   }
 
   // Map Methods
@@ -63,8 +66,8 @@ export class RoomComponent implements OnInit {
     this.map.nativeElement.setAttribute("style", 'border: 1px solid white; grid-template-rows: repeat('+ this.mapDimension + ', ' + this.squareSideLength + 'px); grid-template-columns: repeat(' + this.mapDimension + ', ' + this.squareSideLength + 'px);');
   }
 
-  onDragStart(event: DragEvent) {
-    console.log("Started moving character", JSON.stringify(event, null, 2));
+  updateMapBackground(mapColor: string) { 
+    this.map.nativeElement.style.backgroundColor = mapColor;
   }
 
   onCharacterDrop(event:DndDropEvent, squareIndex: number) {
@@ -179,4 +182,5 @@ export class RoomComponent implements OnInit {
     this.wsService.disconnect();
     this.isPlaying.emit(false); // Tell home component that the user is done playing
   }
+
 }

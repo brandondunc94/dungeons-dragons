@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { map } from 'rxjs/operators';
 import { RoomWebsocketService } from "./room-websocket.service";
 
@@ -32,10 +32,9 @@ export class Character {
 export class RoomService {
   public roomData: Subject<RoomData>;
 
-  constructor(wsService: RoomWebsocketService) {
+  constructor(wsService: RoomWebsocketService) { // Receive room data from websocket
     this.roomData = <Subject<RoomData>>wsService.connect(CHAT_URL).pipe(map(
       (response: MessageEvent): RoomData => { let data = JSON.parse(response.data);
-        console.log(data.payload);
         return data.payload.roomData;
       }
     ));

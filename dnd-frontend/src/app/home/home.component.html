@@ -3,8 +3,13 @@
         <div class='row fill'>
             <div class='d-flex flex-column input-container'>
                 <input type="text" class='join-room-input' #roomCode placeholder='Room Code'>
-                <input type="text" class='join-room-input' #username placeholder='Character Name'>
-                <input type="button" class='join-room-btn' (click)='joinRoom(roomCode.value, username.value)' value="Join Room">
+                <input type="text" class='join-room-input' #username placeholder='Name'>
+                <h3 class='text-white mb-0'>Are you the Dungeon Master?</h3>
+                <mat-button-toggle-group #dungeonMasterToggle="matButtonToggleGroup" aria-label="Dungeon Master Toggle">
+                    <mat-button-toggle value="true">True</mat-button-toggle>
+                    <mat-button-toggle value="false">False</mat-button-toggle>
+                </mat-button-toggle-group>
+                <input type="button" class='join-room-btn' (click)='joinRoom(roomCode.value, username.value, dungeonMasterToggle.value)' value="Join Room">
             </div>
         </div>
     </div>
@@ -12,6 +17,7 @@
 <app-room *ngIf='isPlaying'
         [username]='username'
         [roomCode]='roomCode'
+        [isDungeonMaster]='isDungeonMaster'
         (isPlaying)='leaveRoom()'>
 </app-room>
 

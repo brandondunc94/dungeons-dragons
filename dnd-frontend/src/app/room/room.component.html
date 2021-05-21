@@ -4,7 +4,7 @@
             <h2 class='text-center'>Characters</h2>
             <div *ngFor='let character of roomData.game.characters' class='card p-1' [ngClass]="{'card-npc' : character.type === 'NPC'}">
                 <div class='d-flex flex-column'>
-                    <h4 class='mb-0'>{{character.name}}</h4> 
+                    <h4 class='mb-1'>{{character.name}}</h4> 
                     <div class='health-bar'>
                         <div class='bar' [style.width.%]='setCharacterHealthDisplay(character.health, character.maxHealth)'>
                         </div>
@@ -17,12 +17,11 @@
                 <h2 class='text-center'>Chat</h2>
                 <article *ngFor='let message of roomData.messages' [ngClass]='{"msg-self" : (message.author === username)}' class='msg-container' id='msg-0'>
                     <div class='msg-box'>
-                        <img class='user-img my-auto' id='user-0' src='//gravatar.com/avatar/00034587632094500000000000000000?d=retro' />
                         <div class='flr'>
-                            <div class='messages'>
+                            <div class='messages h-50'>
                                 <p class='msg' id='msg-0'>{{message.message}}</p>
                             </div>
-                            <span class='timestamp'><span class='username'>{{message.author}}</span>&bull;<span class='posttime'>{{message.dateTime|date:'shortTime'}}</span></span>
+                            <span class='timestamp h-50'><span class='username'>{{message.author}}</span>&bull;<span class='posttime'>{{message.dateTime|date:'shortTime'}}</span></span>
                         </div>
                     </div>
                 </article>
@@ -33,21 +32,31 @@
             </section>
         </section>
     </div>
-    <section #map class='col-8 p-0 map grid dndDragzone'>
+    <section #map #canvas class='col-8 p-0 map grid dndDragzone'>
         <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone] (dndDrop)='onCharacterDrop($event,i)'>
             <ng-container *ngFor='let character of roomData.game.characters'>
-                <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC'}"
-                [dndDraggable]='character'
-                (dndStart)='onDragStart($event)'
-                (dblclick)='openUpdateCharacterModel(character)'
-                (click)='selectCharacter(character)'>{{character.name}}</div>
+                <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC'}">
+                    <div class='draggable' *ngIf='isDungeonMaster; else staticCharacter'
+                        [dndDraggable]='character'
+                        (dblclick)='openUpdateCharacterModel(character)'
+                        (click)='selectCharacter(character)'>{{character.name}}
+                    </div>
+                    <ng-template #staticCharacter (click)='selectCharacter(character)'>
+                        {{character.name}}
+                    </ng-template>
+                </div>
             </ng-container>
             <small style='position: absolute; bottom: 0; font-size: 10px;'>{{i}}</small>
         </div>
     </section>
     <div class='col-1 d-flex flex-column action-panel text-center'>
         <div class='flex-fill mt-3'>
-            <button type='button' class='btn add-character-btn' (click)='openNewCharacterModel()'>New Character</button>
+        <h3>Dungeon Master</h3>
+            <button type='button' [disabled]="!isDungeonMaster" class='btn add-character-btn mb-2' (click)='openNewCharacterModel()'>New Character</button>
+        </div>
+        <div>
+            <h3 for="colorpicker" class='mb-0'>Map Background</h3>
+            <input type="color" id="colorpicker" name="mapColor" #mapColor value='#2f323b' (click)='updateMapBackground(mapColor.value)'>
         </div>
         <button type='button' class='m-2 btn green-btn' (click)='saveGame()'>Save Game</button>
         <button type='button' class='m-2 btn disconnect-btn' (click)='disconnect()'>Disconnect</button>

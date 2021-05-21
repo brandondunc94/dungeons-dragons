@@ -2,9 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { RoomWebsocketService } from "../room-websocket.service";
 import { RoomService } from "../room-data.service";
 import Swal from 'sweetalert2';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 // import { trigger, state, style, transition, animate } from '@angular/animations'; 
-// import * as EventEmitter from 'node:events';
-// import * as EventEmitter from 'node:events';
 
 @Component({
   selector: 'app-home',
@@ -19,6 +18,7 @@ export class HomeComponent implements OnInit {
 
   username!: string;
   roomCode!: string;
+  isDungeonMaster!: boolean;
   isPlaying!: Boolean;
 
   constructor() {}
@@ -32,11 +32,11 @@ export class HomeComponent implements OnInit {
     // this.isPlaying = true;
   }
 
-  joinRoom(roomCode: string, username: string) {
-    if (roomCode != '' && username != '') {
+  joinRoom(roomCode: string, username: string, isDungeonMaster: string) {
+    if (roomCode != '' && username != '' && isDungeonMaster != null) {
       this.roomCode = roomCode;
       this.username = username;
-  
+      this.isDungeonMaster = JSON.parse(isDungeonMaster);
       console.log(username + ' joining room ' + this.roomCode);
       this.isPlaying = true;
     } else {
@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit {
         icon: 'error',
         heightAuto: false,
         confirmButtonColor: this.crayolaBlue,
-        text: 'Please enter a room code and username before joining room',
+        text: 'Please fill out all fields before joining room',
       })
     }
 

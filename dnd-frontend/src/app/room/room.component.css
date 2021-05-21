@@ -1,9 +1,7 @@
 .map {
-    background-color: #2f323b;
     display: grid;
     max-height: 100%;
     overflow: scroll;
-    cursor: grab;
     border: 1px solid grey !important; 
 }
 .map-square {
@@ -23,8 +21,8 @@
     text-align: center; 
     line-height: 4;
 }
-.selected-map-character {
-    border: 3px solid gold;
+.draggable {
+    cursor: grab;
 }
 .map-npc {
     background-color: #c54;
@@ -105,7 +103,7 @@
 .msg-box {
     display: flex;
     background: #5b5e6c;
-    padding: 5px 5px 5px 5px;
+    padding: 10px 5px 5px 5px;
     border-radius: 0 6px 6px 0;
     max-width: 80%;
     width: auto;
@@ -134,7 +132,6 @@
     font-size: 11pt;
     line-height: 13pt;
     color: white;
-    margin: 0 0 4px 0;
 }
 .msg:first-of-type {
     margin-top: 8px;
@@ -142,7 +139,6 @@
 .timestamp {
     color: rgba(255,255,255,.7);
     font-size: 8pt;
-    margin-bottom: 10px;
 }
 .username {
     margin-right: 3px;
@@ -210,15 +206,15 @@
 .card {
     width: 70%;
     border-radius: 10px;
-    background-color: white;
-    border: 3px solid #2671ff;
-    color: black;
+    background-color: #40434e;
+    border: 1px solid #2671ff;
+    color: white;
     height: 60px;
     margin: 0 auto;
     margin-bottom: 10px; /*This must come after margin: 0 auto */
 }
 .card-npc {
-    border: 3px solid #c54 !important;
+    border: 1px solid #c54 !important;
 }
 .selected-character-card {
     border: 3px solid gold;
