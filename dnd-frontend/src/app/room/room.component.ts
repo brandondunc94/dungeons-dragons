@@ -45,7 +45,6 @@ export class RoomComponent implements OnInit {
   ngOnInit(): void {
     this.wsService = new RoomWebsocketService;
     this.roomService = new RoomService(this.wsService);
-
     // Subscribe to new data from websocket
     this.roomService.roomData.subscribe(newData => {
       this.roomData = newData;
@@ -94,7 +93,9 @@ export class RoomComponent implements OnInit {
           health: 40,
           maxHealth: 40,
           position: position,
-          type: 'PC' // PC or NPC
+          type: 'PC', // PC or NPC,
+
+          class: 'Druid'
         }
       )
       position++;
@@ -115,7 +116,7 @@ export class RoomComponent implements OnInit {
     // The user can't close the dialog by clicking outside its body
     dialogConfig.disableClose = true;
     dialogConfig.id = "modal-component";
-    dialogConfig.height = "400px";
+    dialogConfig.height = "600px";
     dialogConfig.width = "600px";
     dialogConfig.data = {
       name: "update-character",
@@ -127,31 +128,31 @@ export class RoomComponent implements OnInit {
     const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
 
     modalDialog.afterClosed().subscribe(updatedCharacter => {
-      console.log('The dialog was closed');
       character = updatedCharacter;
+      this.sendRoomData();
     });
 
   }
 
   openNewCharacterModel() {
     const dialogConfig = new MatDialogConfig();
-    
+
     dialogConfig.disableClose = true; // The user can't close the dialog by clicking outside its body
     dialogConfig.id = "modal-component";
-    dialogConfig.height = "400px";
+    dialogConfig.height = "600px";
     dialogConfig.width = "600px";
     dialogConfig.data = {
       name: "new-character",
       title: "Create New Character",
-      actionButtonText: "Create",
+      actionButtonText: "Create"
     }
     // https://material.angular.io/components/dialog/overview
     const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
 
     modalDialog.afterClosed().subscribe(newCharacter => {
-      console.log('The dialog was closed');
       if(newCharacter.name) {
         this.roomData.game.characters.push(newCharacter);
+        this.sendRoomData();
       }
     });
   }
@@ -169,9 +170,13 @@ export class RoomComponent implements OnInit {
         dateTime: new Date()
       }
       this.roomData.messages.push(newMessage);
-      this.roomService.roomData.next(this.roomData);
+      this.sendRoomData();
     }
     this.messageInputField.nativeElement.value = ''; // Reset input field
+  }
+
+  sendRoomData() {
+    this.roomService.roomData.next(this.roomData);
   }
 
   saveGame() {

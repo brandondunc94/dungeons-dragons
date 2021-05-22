@@ -2,8 +2,9 @@ import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
 import { map } from 'rxjs/operators';
 import { RoomWebsocketService } from "./room-websocket.service";
+import { environment } from '../environments/environment';
 
-const CHAT_URL = "ws://127.0.0.1:8001/ws/play/1";
+const CHAT_URL = environment.websocketURL;
 
 export interface RoomData {
   game: GameData,
@@ -25,7 +26,8 @@ export class Character {
   health!: number;
   maxHealth!: number;
   position!: number;
-  type!: string // PC or NPC
+  type!: string; // PC or NPC
+  class!: string;
 }
 
 @Injectable()

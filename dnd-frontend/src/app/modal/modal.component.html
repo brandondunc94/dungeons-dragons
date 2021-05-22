@@ -17,13 +17,18 @@
         </div>
         <div class="form-group">
             <label for="character-type">Type</label>
-            <input [(ngModel)]="character.type" type="number" class="form-control" name='character-type' aria-describedby="characterType" placeholder="NPC">
+            <input [(ngModel)]="character.type" type="text" class="form-control" name='character-type' aria-describedby="characterType" placeholder="NPC">
+        </div>
+        <div class="form-group mt-1">
+            <label for="character-class" class='mr-2'>Class</label>
+            <select [(ngModel)]="character.class" name='character-class' aria-describedby="character-class" class="form-control">
+                <option disabled [ngValue]='character.class'>{{character.class}}</option>
+                <option *ngFor='let currentClass of dndApiService.characterClasses' [ngValue]='currentClass.name'>{{currentClass.name}}</option>
+            </select>
         </div>
     </section>
     <footer id="modal-footer">
         <button class='btn green-btn m-2' (click)="actionFunction()">{{modalData.actionButtonText}}</button>
-        <button class='btn white-btn' (click)="closeModal()">
-            Cancel
-        </button>
+        <button class='btn white-btn' (click)="closeModal()">Cancel</button>
     </footer>
 </div>

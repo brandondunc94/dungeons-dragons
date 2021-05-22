@@ -6,35 +6,40 @@
             "health": 40,
             "maxHealth": 40,
             "position": 43,
-            "type": "PC"
+            "type": "PC",
+            "class": "Druid"
         },
         {
             "name": "Thad",
             "health": 40,
             "maxHealth": 40,
             "position": 81,
-            "type": "PC"
+            "type": "PC",
+            "class": "Cleric"
         },
         {
             "name": "Oz",
             "health": 40,
             "maxHealth": 40,
             "position": 48,
-            "type": "PC"
+            "type": "PC",
+            "class": "Rogue"
         },
         {
             "name": "Lo",
             "health": 40,
             "maxHealth": 40,
             "position": 6,
-            "type": "PC"
+            "type": "PC",
+            "class": "Wizard"
         },
         {
             "name": "Alistair",
             "health": 40,
             "maxHealth": 40,
             "position": 104,
-            "type": "PC"
+            "type": "PC",
+            "class": "Fighter"
         },
         {
             "name": "Goblin",

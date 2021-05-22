@@ -4,7 +4,10 @@
             <h2 class='text-center'>Characters</h2>
             <div *ngFor='let character of roomData.game.characters' class='card p-1' [ngClass]="{'card-npc' : character.type === 'NPC'}">
                 <div class='d-flex flex-column' *ngIf='isDungeonMaster; else staticCard'>
-                    <h4 class='mb-1'>{{character.name}}</h4> 
+                    <div class='d-flex flex-row'>
+                        <h4 class='mb-1'>{{character.name}}</h4>
+                        <h4>| {{character.class}}</h4> 
+                    </div>
                     <div class='health-bar'>
                         <div class='bar' [style.width.%]='setCharacterHealthDisplay(character.health, character.maxHealth)'>
                         </div>
@@ -39,7 +42,7 @@
             </section>
         </section>
     </div>
-    <section #map #canvas class='col-8 p-0 map grid dndDragzone'>
+    <section #map class='col-8 p-0 map grid dndDragzone'>
         <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone] (dndDrop)='onCharacterDrop($event,i)'>
             <ng-container *ngFor='let character of roomData.game.characters'>
                 <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC'}">

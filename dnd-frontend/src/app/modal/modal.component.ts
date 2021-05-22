@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject, Input } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Character } from '../room-data.service';
+import { DndApiService } from '../dnd-api.service';
 
 @Component({
   selector: 'app-modal',
@@ -12,24 +13,28 @@ export class ModalComponent implements OnInit {
   @Input() character!: Character;
 
   constructor(
+    public dndApiService: DndApiService,
     public dialogRef: MatDialogRef<ModalComponent>,
     @Inject(MAT_DIALOG_DATA) public modalData: any
   ) {
-    console.log(modalData);
+    console.log(this.dndApiService.characterClasses);
     if (modalData.character) { // If character object was passed in, display it in modal
       this.character = modalData.character;
+      console.log(this.character);
     } else {
       this.character = { // Initialize character object since we are creating a new character
         name: '',
         health: 0,
         maxHealth: 0,
         position: 0,
-        type: 'NPC' // PC or NPC
+        type: 'NPC', // PC or NPC
+        class: ''
       }
     }
   }
 
-  ngOnInit() { }
+  ngOnInit() { 
+  }
 
   actionFunction() {
     switch (this.modalData.name) {
