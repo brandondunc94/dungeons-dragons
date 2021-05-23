@@ -23,6 +23,7 @@ export class ModalComponent implements OnInit {
       console.log(this.character);
     } else {
       this.character = { // Initialize character object since we are creating a new character
+        id: -1,
         name: '',
         health: 0,
         maxHealth: 0,

@@ -22,6 +22,7 @@ export interface Message {
 }
 
 export class Character {
+  id!: number;
   name!: string;
   health!: number;
   maxHealth!: number;

@@ -70,7 +70,7 @@ export class RoomComponent implements OnInit {
   }
 
   onCharacterDrop(event:DndDropEvent, squareIndex: number) {
-    let characterDropped = this.roomData.game.characters.find(character => character.name === event.data.name); // Find character in array
+    let characterDropped = this.roomData.game.characters.find(character => character.id === event.data.id); // Find character in array
     if (characterDropped && squareIndex > -1){
       characterDropped.position = squareIndex;
       this.roomService.roomData.next(this.roomData); // Send update to server
@@ -89,6 +89,7 @@ export class RoomComponent implements OnInit {
     for (let character of newCharacters){
       this.roomData.game.characters.push(
         {
+          id: position,
           name: character,
           health: 40,
           maxHealth: 40,
@@ -151,8 +152,12 @@ export class RoomComponent implements OnInit {
 
     modalDialog.afterClosed().subscribe(newCharacter => {
       if(newCharacter.name) {
+        // Take last character id, add 1, and set as new character id
+        newCharacter.id = this.roomData.game.characters[this.roomData.game.characters.length -1].id + 1;
+
+        // Add new character to character array
         this.roomData.game.characters.push(newCharacter);
-        this.sendRoomData();
+        this.sendRoomData(); // Send new data to websocket
       }
     });
   }
@@ -175,6 +180,7 @@ export class RoomComponent implements OnInit {
     this.messageInputField.nativeElement.value = ''; // Reset input field
   }
 
+  // Sends latest room data to websocket
   sendRoomData() {
     this.roomService.roomData.next(this.roomData);
   }
