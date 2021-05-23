@@ -1,12 +1,12 @@
 <div class='row h-100'>
-    <div class='col-3 p-0 stats-chat'>
+    <div class='col-3 stats-chat'>
         <div class='stats-box'>
             <h2 class='text-center'>Characters</h2>
             <div *ngFor='let character of roomData.game.characters' class='card p-1' [ngClass]="{'card-npc' : character.type === 'NPC'}">
                 <div class='d-flex flex-column' *ngIf='isDungeonMaster; else staticCard'>
                     <div class='d-flex flex-row'>
-                        <h4 class='mb-1'>{{character.name}}</h4>
-                        <h4>| {{character.class}}</h4> 
+                        <h3 class='flex-grow-1 m-0'>{{character.name}}</h3>
+                        <h4 class='m-0'>{{character.class}}</h4> 
                     </div>
                     <div class='health-bar'>
                         <div class='bar' [style.width.%]='setCharacterHealthDisplay(character.health, character.maxHealth)'>
@@ -23,15 +23,15 @@
             </div>
         </div>
         <section class='chat-box'>
+            <h2 class='text-center mb-0'>Chat</h2>
             <section class='chat-window'>
-                <h2 class='text-center'>Chat</h2>
-                <article *ngFor='let message of roomData.messages' [ngClass]='{"msg-self" : (message.author === username)}' class='msg-container' id='msg-0'>
+                <article *ngFor='let message of roomData.messages' [ngClass]='{"msg-self" : (message.author === username)}' class='msg-container'>
                     <div class='msg-box'>
                         <div class='flr'>
-                            <div class='messages h-50'>
-                                <p class='msg' id='msg-0'>{{message.message}}</p>
+                            <div class='messages'>
+                                <p class='msg'>{{message.message}}</p>
                             </div>
-                            <span class='timestamp h-50'><span class='username'>{{message.author}}</span>&bull;<span class='posttime'>{{message.dateTime|date:'shortTime'}}</span></span>
+                            <span class='timestamp'><span class='chat-username'>{{message.author}}</span>&bull;<span class='posttime'>{{message.dateTime|date:'shortTime'}}</span></span>
                         </div>
                     </div>
                 </article>
