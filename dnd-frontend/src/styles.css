@@ -35,9 +35,11 @@ textarea:focus, input:focus{
 .green-btn {
   background-color: #6cae75 !important;
   color: white !important;
+  width: 120px;
 }
 
 .white-btn {
   border: 1px solid white !important;
   color: white !important;
+  width: 120px;
 }

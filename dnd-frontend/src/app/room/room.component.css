@@ -215,6 +215,9 @@
     margin: 0 auto;
     margin-bottom: 10px; /*This must come after margin: 0 auto */
 }
+.character-card {
+    cursor: pointer;
+}
 .card-npc {
     border: 1px solid #c54 !important;
 }
@@ -249,6 +252,12 @@
     width: 120px;
 }
 .save-button {
+    background-color: transparent;
+    border: 1px solid #6cae75;
+    color: white;
+    width: 120px;
+}
+.load-button {
     background-color: transparent;
     border: 1px solid #6cae75;
     color: white;

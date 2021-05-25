@@ -1,10 +1,13 @@
 import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { DomSanitizer} from '@angular/platform-browser';
 import { DndDropEvent } from 'ngx-drag-drop';
 import { RoomWebsocketService } from "../room-websocket.service";
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
 import { RoomService, RoomData, Character } from '../room-data.service';
 import * as jsonData from './gameData.json';
+import { Observable, Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-room',
@@ -19,7 +22,7 @@ export class RoomComponent implements OnInit {
   @Output() isPlaying = new EventEmitter<boolean>(); // Used for going back to home splash page
   characters!: Array<Character>; // Track all characters in room
   selectedCharacter!: Character | null;
-
+  
   roomData!: RoomData;
   @ViewChild('messageInputField') messageInputField!: ElementRef; // Reference to message input field in DOM
 
@@ -29,30 +32,29 @@ export class RoomComponent implements OnInit {
   @ViewChild('map', {static: true}) map!:ElementRef; // Reference to map in DOM
   mapDimension = 20;
   mapColor = '#2f323b';
-  squareSideLength = 80;
+  squareSideLength = 80; // pixels
 
-  constructor(public matDialog: MatDialog) { 
+  constructor(public matDialog: MatDialog, private sanitizer: DomSanitizer, private http: HttpClient) { 
     this.roomData = {
       game: {
         characters: []
       },
       messages: []
     };
-
-    this.roomData = (jsonData as any).default; // Update this with DB query
   }
 
   ngOnInit(): void {
     this.wsService = new RoomWebsocketService;
     this.roomService = new RoomService(this.wsService);
-    // Subscribe to new data from websocket
+
+    // Subscribe to new room data from websocket
     this.roomService.roomData.subscribe(newData => {
       this.roomData = newData;
       console.log("Received new data from websocket.");
     });
 
     this.createMapGrid();
-    this.map.nativeElement.style.backgroundColor = '#2f323b';
+    this.map.nativeElement.style.backgroundColor = '#2f323b'; // Set default map background color
   }
 
   // Map Methods
@@ -79,30 +81,6 @@ export class RoomComponent implements OnInit {
   }
 
   //Character methods
-  getCharacters() {
-    this.generateTestCharacters(); // Temporary
-  }
-
-  generateTestCharacters() {
-    const newCharacters = ['Aelia', 'Thad', 'Oz', 'Alistar', 'Lo'];
-    let position = 1;
-    for (let character of newCharacters){
-      this.roomData.game.characters.push(
-        {
-          id: position,
-          name: character,
-          health: 40,
-          maxHealth: 40,
-          position: position,
-          type: 'PC', // PC or NPC,
-
-          class: 'Druid'
-        }
-      )
-      position++;
-    }
-  }
-
   selectCharacter(character: Character) {
     if(this.selectedCharacter === character) {
       this.selectedCharacter = null;
@@ -153,8 +131,11 @@ export class RoomComponent implements OnInit {
     modalDialog.afterClosed().subscribe(newCharacter => {
       if(newCharacter.name) {
         // Take last character id, add 1, and set as new character id
-        newCharacter.id = this.roomData.game.characters[this.roomData.game.characters.length -1].id + 1;
-
+        try {
+          newCharacter.id = this.roomData.game.characters[this.roomData.game.characters.length -1].id + 1;
+        } catch {
+          newCharacter.id = 0; // First character, set id = 0
+        }
         // Add new character to character array
         this.roomData.game.characters.push(newCharacter);
         this.sendRoomData(); // Send new data to websocket
@@ -185,10 +166,32 @@ export class RoomComponent implements OnInit {
     this.roomService.roomData.next(this.roomData);
   }
 
+  public downloadJsonHref: any;
   saveGame() {
     // Save logic goes here, write to DB or create json file and give to user
+    {
+      var gameDataJson = JSON.stringify(this.roomData);
+      var uri = this.sanitizer.bypassSecurityTrustUrl("data:text/json;charset=UTF-8," + encodeURIComponent(gameDataJson));
+      this.downloadJsonHref = uri;
+    }
   }
-  
+
+  readFile($event: any){
+    var file:File = $event.target.files[0]; 
+    var myReader:FileReader = new FileReader();
+
+    myReader.onloadend = (e) => {
+      this.loadGame(myReader.result); // Once file has been read by FileReader, load game data
+    };
+
+    myReader.readAsText(file);
+  }
+
+  loadGame(gameFileData: any) : void {
+    this.roomData = JSON.parse(gameFileData);
+    this.sendRoomData();
+  }
+
   disconnect() {
     this.wsService.disconnect();
     this.isPlaying.emit(false); // Tell home component that the user is done playing
