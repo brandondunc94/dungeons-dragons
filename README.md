@@ -7,22 +7,10 @@ FFFFFF - White
 8B9474 - Artichoke
 6CAE75 - Forest Green Crayola
 
-Scripts:
-python ./dnd-server/manage.py runserver
+Django Scripts:
+Activate virtual env: source dnd-env/bin/activate
+Start server: python manage.py runserver 127.0.0.1:8001
 
-Design
-
-Home - 
-	Profile
-		Login/Logout
-	My Characters (Future)
-		- Create new character
-		- Edit Character
-	Game
-		- Join Room
-		- Create Room (DM option only)
-
-Room
-	Stats
-	Map (Interactive) - Websocket Needed
-	Characters
+Angular Scripts:
+Local build: ng build
+Prod build: ng build --prod=true  
