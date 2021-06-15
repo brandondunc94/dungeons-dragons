@@ -1,13 +1,14 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import { DomSanitizer} from '@angular/platform-browser';
 import { DndDropEvent } from 'ngx-drag-drop';
 import { RoomWebsocketService } from "../room-websocket.service";
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
 import { RoomService, RoomData, Character } from '../room-data.service';
-import * as jsonData from './gameData.json';
-import { Observable, Subscription } from 'rxjs';
+import { fromEvent } from 'rxjs';
+import { switchMap, takeUntil, pairwise } from 'rxjs/operators'
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-room',
@@ -30,6 +31,10 @@ export class RoomComponent implements OnInit {
   private wsService!: RoomWebsocketService;
 
   @ViewChild('map', {static: true}) map!:ElementRef; // Reference to map in DOM
+  @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
+  private ctx!: CanvasRenderingContext2D | null;
+  canvasBackgroundImage!: string;
+  isDrawing!: boolean;
   mapDimension = 20;
   mapColor = '#2f323b';
   squareSideLength = 80; // pixels
@@ -45,16 +50,22 @@ export class RoomComponent implements OnInit {
 
   ngOnInit(): void {
     this.wsService = new RoomWebsocketService;
-    this.roomService = new RoomService(this.wsService);
+    this.roomService = new RoomService(this.wsService, this.http);
 
     // Subscribe to new room data from websocket
     this.roomService.roomData.subscribe(newData => {
       this.roomData = newData;
+      this.canvasBackgroundImage = environment.canvasImageUrl + this.roomCode + '.png'; // Refresh canvas image
       console.log("Received new data from websocket.");
     });
 
     this.createMapGrid();
     this.map.nativeElement.style.backgroundColor = '#2f323b'; // Set default map background color
+    this.canvasBackgroundImage = environment.canvasImageUrl + this.roomCode + '.png';
+    
+    this.isDrawing = false;
+    this.canvas.nativeElement.width = this.map.nativeElement.offsetWidth;
+    this.canvas.nativeElement.height = this.map.nativeElement.offsetHeight;
   }
 
   // Map Methods
@@ -77,6 +88,91 @@ export class RoomComponent implements OnInit {
       characterDropped.position = squareIndex;
       this.roomService.roomData.next(this.roomData); // Send update to server
       console.log(characterDropped);
+    }
+  }
+
+  toggleMapDrawing() {
+    this.isDrawing = !this.isDrawing;
+
+    if (this.isDrawing) {
+      const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
+      this.ctx = canvasEl.getContext('2d');
+      
+      // Set default properties about the canvas drawing
+      this.ctx!.lineWidth = 2;
+      this.ctx!.lineCap = 'round';
+      this.ctx!.strokeStyle = 'red';
+      // Start capturing canvas drawing from user
+      this.captureCanvasDrawing(canvasEl);
+    }
+    if (!this.isDrawing) {
+      if (this.ctx != null) {
+        let canvasImage = this.canvas.nativeElement.toDataURL("canvas/png")
+        canvasImage.replace(/^data:image\/(png|jpg);base64,/, "");
+
+        this.canvas.nativeElement.toBlob( // Upload blob to server
+          blob => {
+            if(blob){
+            this.roomService.uploadCanvasImage(blob, this.roomCode); // Upload the canvas image to the server
+            this.sendRoomData(); // Tell other players the map has been updated
+            }
+          },
+          'image/png',
+          0.9,
+        );
+      }
+    }
+  }
+
+  private captureCanvasDrawing(canvasEl: HTMLCanvasElement) {
+    // this will capture all mousedown events from the canvas element
+    fromEvent(canvasEl, 'mousedown')
+      .pipe(
+        switchMap((e) => {
+          // after a mouse down, we'll record all mouse moves
+          return fromEvent(canvasEl, 'mousemove')
+            .pipe(
+              // we'll stop (and unsubscribe) once the user releases the mouse
+              // this will trigger a 'mouseup' event    
+              takeUntil(fromEvent(canvasEl, 'mouseup')),
+              // we'll also stop (and unsubscribe) once the mouse leaves the canvas (mouseleave event)
+              takeUntil(fromEvent(canvasEl, 'mouseleave')),
+              // pairwise lets us get the previous value to draw a line from
+              // the previous point to the current point    
+              pairwise()
+            )
+        })
+      )
+      .subscribe((res: any) => {
+        const rect = canvasEl.getBoundingClientRect();
+  
+        // previous and current position with the offset
+        const prevPos = {
+          x: res[0].clientX - rect.left,
+          y: res[0].clientY - rect.top
+        };
+  
+        const currentPos = {
+          x: res[1].clientX - rect.left,
+          y: res[1].clientY - rect.top
+        };
+        this.drawOnCanvas(prevPos, currentPos);
+      });
+  }
+
+  private drawOnCanvas(
+    prevPos: { x: number, y: number }, 
+    currentPos: { x: number, y: number }
+  ) {
+    // incase the context is not set
+    if (!this.ctx) { return; }
+  
+    this.ctx.beginPath();
+    if (prevPos) {
+      this.ctx.moveTo(prevPos.x, prevPos.y); // from
+      this.ctx.lineTo(currentPos.x, currentPos.y); // to
+      this.ctx.stroke(); // Draw using defined styles
+      this.ctx.save();
     }
   }
 

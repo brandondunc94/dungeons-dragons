@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  websocketURL: 'ws://127.0.0.1:8001/ws/play/1'
+  websocketURL: 'ws://127.0.0.1:8001/ws/play/1',
+  canvasImageUrl: 'http://127.0.0.1:8001/media/images/',
+  canvasImageUpload: 'http://127.0.0.1:8001/game/canvas/'
 };
 
 /*

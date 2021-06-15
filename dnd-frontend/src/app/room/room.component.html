@@ -35,36 +35,41 @@
             </section>
         </section>
     </div>
-    <section #map class='col-8 p-0 map grid dndDragzone'>
-        <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone] (dndDrop)='onCharacterDrop($event,i)'>
-            <ng-container *ngFor='let character of roomData.game.characters'>
-                <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC'}">
-                    <div class='draggable'
-                        [dndDraggable]='character'
-                        (dblclick)='openUpdateCharacterModel(character)'
-                        (click)='selectCharacter(character)'>{{character.name}}
+    <div class='col-8 p-0 map-container'>
+        <div #map class='map grid dndDragzone'>
+            <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone] (dndDrop)='onCharacterDrop($event,i)'>
+                <ng-container *ngFor='let character of roomData.game.characters'>
+                    <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC'}">
+                        <div class='draggable'
+                            [dndDraggable]='character'
+                            (dblclick)='openUpdateCharacterModel(character)'
+                            (click)='selectCharacter(character)'>{{character.name}}
+                        </div>
                     </div>
-                </div>
-            </ng-container>
-            <small style='position: absolute; bottom: 0; font-size: 10px;'>{{i}}</small>
+                </ng-container>
+                <small style='position: absolute; bottom: 0; font-size: 10px;'>{{i}}</small>
+            </div>
         </div>
-    </section>
+        <canvas #canvas class='canvas' style="background: url({{canvasBackgroundImage}})">
+        </canvas>
+    </div>
     <div class='col-1 d-flex flex-column action-panel text-center'>
         <div class='flex-fill mt-3'>
             <h3>Dungeon Master</h3>
             <button type='button' class='btn add-character-btn mb-2'  [disabled]="!isDungeonMaster" (click)='openNewCharacterModel()'>New Character</button>
-            <a class='white-btn btn mb-2' href='http://dnd5e.wikidot.com/' target="_blank">Dnd Wiki</a>
-            <a class='btn save-button mb-2' title="Download JSON Game Data" [href]="downloadJsonHref" (click)='saveGame()' download="game-data.json">Save Game</a>
-            <input type="button" class='btn load-button mb-2' value="Load Game" onclick="document.getElementById('file').click();" [disabled]="!isDungeonMaster"/>
-            <input type="file" style="display:none;" id="file" name="file" (change)="readFile($event)"/>
-            <div>
+            <button type='button' class='btn map-drawing-btn mb-2'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Upload Map' : 'Draw Map' }}</button>
+                        <div>
                 <h3 for="colorpicker" class='mb-0'>Map Background</h3>
                 <input type="color" id="colorpicker" name="mapColor" #mapColor value='#2f323b' (click)='updateMapBackground(mapColor.value)'>
             </div>
+            
         </div>
-        
-        <button type='button' class='m-2 btn btn-sm disconnect-btn' (click)='disconnect()'>Disconnect</button>
+        <a class='white-btn btn mb-2' href='http://dnd5e.wikidot.com/' target="_blank">Dnd Wiki</a>
+        <a class='btn save-button mb-2' title="Download JSON Game Data" [href]="downloadJsonHref" (click)='saveGame()' download="game-data.json">Save Game</a>
+        <input type="button" class='btn load-button mb-2' value="Load Game" onclick="document.getElementById('file').click();" [disabled]="!isDungeonMaster"/>
+        <input type="file" style="display:none;" id="file" name="file" (change)="readFile($event)"/>
+        <button type='button' class='btn btn-sm disconnect-btn' (click)='disconnect()'>Disconnect</button>
     </div>
+    
 </div>
-
 

@@ -1,8 +1,11 @@
+.map-container {
+    position: relative;
+    overflow: scroll;
+}
 .map {
     display: grid;
-    max-height: 100%;
-    overflow: scroll;
-    border: 1px solid grey !important; 
+    border: 1px solid grey !important;
+    position: absolute;
 }
 .map-square {
     color:white; 
@@ -20,6 +23,9 @@
     margin-top: 5px; 
     text-align: center; 
     line-height: 4;
+}
+.canvas {
+    position: absolute;
 }
 .draggable {
     cursor: grab;
@@ -251,6 +257,17 @@
     font-size: 14px;
     width: 120px;
 }
+.map-drawing-btn {
+    background-color: transparent;
+    border: 1px solid white;
+    color: white;
+    font-size: 14px;
+    width: 120px;
+}
+.map-upload-btn {
+    background-color: #6cae75;
+    border: 1px solid #6cae75;
+}
 .save-button {
     background-color: transparent;
     border: 1px solid #6cae75;
@@ -266,4 +283,7 @@
 .disconnect-btn {
     background-color: red;
     color: white;
+    width: 120px;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
