@@ -51,6 +51,7 @@ export class RoomService {
     const formData: FormData = new FormData(); // Create form for POST call and attach image blob
     formData.append('canvasImageKey', image, roomCode);
 
+    console.log('Attempting to upload canvas image...');
     this.http.post(this.CANVAS_URL + roomCode + '/', formData).subscribe(response => { // Make POST call to send latest canvas
       console.log(response);
     });
