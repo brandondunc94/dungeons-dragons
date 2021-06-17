@@ -9,6 +9,7 @@ import { fromEvent } from 'rxjs';
 import { switchMap, takeUntil, pairwise } from 'rxjs/operators'
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-room',
@@ -39,6 +40,17 @@ export class RoomComponent implements OnInit {
   mapColor = '#2f323b';
   squareSideLength = 80; // pixels
 
+  //Init toast notification object
+  toast = Swal.mixin({
+    toast: true,
+    position: 'center',
+    customClass: {
+      popup: 'colored-toast'
+    },
+    showConfirmButton: false,
+    timer: 2500,
+  })
+
   constructor(public matDialog: MatDialog, private sanitizer: DomSanitizer, private http: HttpClient) { 
     this.roomData = {
       game: {
@@ -52,20 +64,23 @@ export class RoomComponent implements OnInit {
     this.wsService = new RoomWebsocketService;
     this.roomService = new RoomService(this.wsService, this.http);
 
-    // Subscribe to new room data from websocket
+    // Subscribe to new room data from websocket - we will hit this anytime the websocket sends new data
     this.roomService.roomData.subscribe(newData => {
       this.roomData = newData;
-      this.canvasBackgroundImage = environment.canvasImageUrl + this.roomCode + '.png'; // Refresh canvas image
+      this.getLatestCanvas();
       console.log("Received new data from websocket.");
     });
 
     this.createMapGrid();
     this.map.nativeElement.style.backgroundColor = '#2f323b'; // Set default map background color
-    this.canvasBackgroundImage = environment.canvasImageUrl + this.roomCode + '.png';
-    
+  
+    // Init canvas values
+    this.ctx = this.canvas.nativeElement.getContext('2d'); // canvas context, used to draw
+    this.getLatestCanvas();
     this.isDrawing = false;
-    this.canvas.nativeElement.width = this.map.nativeElement.offsetWidth;
+    this.canvas.nativeElement.width = this.map.nativeElement.offsetWidth; // Set canvas to same size as map
     this.canvas.nativeElement.height = this.map.nativeElement.offsetHeight;
+
   }
 
   // Map Methods
@@ -91,30 +106,41 @@ export class RoomComponent implements OnInit {
     }
   }
 
-  toggleMapDrawing() {
-    this.isDrawing = !this.isDrawing;
+  getLatestCanvas() { // Retrieve the latest canvas image from the server and draw it on the canvas
+    let newCanvas = new Image();
+    newCanvas.setAttribute('crossOrigin', 'anonymous');
+    newCanvas.src = environment.canvasImageUrl + this.roomCode + '.png#' + new Date().getTime();
+    newCanvas.onload = () => {
+      this.ctx!.drawImage(newCanvas,0,0);   
+    }
+  }
 
+  toggleMapDrawing() {
+    this.isDrawing = !this.isDrawing; // Flip map drawing flag
     if (this.isDrawing) {
-      const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
-      this.ctx = canvasEl.getContext('2d');
-      
       // Set default properties about the canvas drawing
       this.ctx!.lineWidth = 2;
       this.ctx!.lineCap = 'round';
       this.ctx!.strokeStyle = 'red';
       // Start capturing canvas drawing from user
-      this.captureCanvasDrawing(canvasEl);
+      this.captureCanvasDrawing(this.canvas.nativeElement);
     }
-    if (!this.isDrawing) {
+    if (!this.isDrawing) { // Finished drawing, save and upload canvas to server
       if (this.ctx != null) {
+        this.canvas.nativeElement.style.backgroundImage
         let canvasImage = this.canvas.nativeElement.toDataURL("canvas/png")
         canvasImage.replace(/^data:image\/(png|jpg);base64,/, "");
 
-        this.canvas.nativeElement.toBlob( // Upload blob to server
+        this.canvas.nativeElement.toBlob( // Convert canvas to blob
           blob => {
             if(blob){
-            this.roomService.uploadCanvasImage(blob, this.roomCode); // Upload the canvas image to the server
-            this.sendRoomData(); // Tell other players the map has been updated
+              this.roomService.uploadCanvasImage(blob, this.roomCode); // Upload the canvas image to the server
+              this.toast.fire({
+                icon: 'success',
+                iconColor: 'green',
+                title: 'Map uploaded successfully'
+              })
+              this.sendRoomData(); // Tell other players the map has been updated
             }
           },
           'image/png',
