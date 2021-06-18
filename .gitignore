@@ -6,3 +6,7 @@ __pycache__/
 dnd-server/dnd/settings.py
 /settings.py
 dnd-server/game/migrations/
+dnd-frontend/.vscode/launch.json
+dnd-server/.vscode/launch.json
+dnd-frontend/src/temp
+dnd-server/media/
