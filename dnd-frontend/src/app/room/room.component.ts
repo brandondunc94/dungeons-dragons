@@ -127,8 +127,7 @@ export class RoomComponent implements OnInit {
     }
     if (!this.isDrawing) { // Finished drawing, save and upload canvas to server
       if (this.ctx != null) {
-        this.canvas.nativeElement.style.backgroundImage
-        let canvasImage = this.canvas.nativeElement.toDataURL("canvas/png")
+        let canvasImage = this.canvas.nativeElement.toDataURL("canvas/png");
         canvasImage.replace(/^data:image\/(png|jpg);base64,/, "");
 
         this.canvas.nativeElement.toBlob( // Convert canvas to blob
