@@ -3,3 +3,6 @@ dnd-frontend/dist/
 dnd-server/dev-env/
 dnd-server/db.sqlite3
 __pycache__/
+dnd-server/dnd/settings.py
+/settings.py
+dnd-server/game/migrations/
