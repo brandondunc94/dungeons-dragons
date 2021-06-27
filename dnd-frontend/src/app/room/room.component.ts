@@ -110,9 +110,14 @@ export class RoomComponent implements OnInit {
     let newCanvas = new Image();
     newCanvas.setAttribute('crossOrigin', 'anonymous');
     newCanvas.src = environment.canvasImageUrl + this.roomCode + '.png#' + new Date().getTime();
+    console.log('Retrieving canvas at url ' + newCanvas.src);
     newCanvas.onload = () => {
       this.ctx!.drawImage(newCanvas,0,0);   
     }
+  }
+
+  clearMap() { // Yeah you guessed it, this clears the map
+    this.ctx!.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
   }
 
   toggleMapDrawing() {

@@ -58,7 +58,10 @@
             <h3>Dungeon Master</h3>
             <button type='button' class='btn add-character-btn mb-2'  [disabled]="!isDungeonMaster" (click)='openNewCharacterModel()'>New Character</button>
             <button type='button' class='btn map-drawing-btn mb-2'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Upload Map' : 'Draw Map' }}</button>
-                        <div>
+            <ng-container *ngIf='isDrawing'>
+                <button type='button' class='btn map-drawing-btn mb-2'  [disabled]="!isDungeonMaster" (click)='clearMap()'>Clear Map</button>
+            </ng-container>
+            <div>
                 <h3 for="colorpicker" class='mb-0'>Map Background</h3>
                 <input type="color" id="colorpicker" name="mapColor" #mapColor value='#2f323b' (click)='updateMapBackground(mapColor.value)'>
             </div>
