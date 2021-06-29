@@ -1,12 +1,16 @@
-import json
 from typing import cast
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Game
+from .models import Game, Character
+from .serializers import CharacterSerializer
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
+from rest_framework import status
+
+from game import serializers
 
 @csrf_exempt
 def upload_map_canvas(request, roomCode=1):
@@ -50,3 +54,38 @@ def create_new_game(request, roomCode):
         'status': status
     }
     return Response(data)
+
+@api_view(['GET'])
+def get_characters(request, roomCode):
+    try:
+        print('Getting characters for room: ' + roomCode)
+        characters = Character.objects.filter(game_id=roomCode)
+        charactersPayload = CharacterSerializer(characters, many=True)
+        status = 'SUCCESS'
+    except:
+        status = 'FAILED'
+        charactersPayload = ''
+    data = {
+        'status': status,
+        'characters': charactersPayload.data
+    }
+    return Response(data)
+
+@api_view(['POST'])
+def create_character(request, roomCode):
+    print('Creating new character for room: ' + roomCode)
+    try:
+        data = JSONParser().parse(request)
+        serializer = CharacterSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            status = 'SUCCESS'
+        else:
+            status = 'FAILED' #Not all fields sent - unable to create character
+    except:
+        status = 'FAILED' #Error while trying to create new character - room code might be invalid
+    data = {
+        'status': status
+    }
+    return Response(data)
+
