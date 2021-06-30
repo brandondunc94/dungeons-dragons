@@ -23,24 +23,14 @@ class RoomConsumer(AsyncJsonWebsocketConsumer):
         )
     
     async def receive(self, text_data):
-        response = json.loads(text_data)
-
-        payloadType = response.get('type', None)
-        print(payloadType)
-        # messageAuthor = response.get("author", None)
-        # message = response.get("message", None)
-        # messageDateTime = response.get("dateTime", None)
-        #print('Received new message - ' + messageAuthor + ':' + message)
-        #Send message to room group
         await self.channel_layer.group_send(self.room_group_name, {
-            'type': 'send_data',
-            'roomData': response
+            'type': 'send_update',
             #'message': message,
             #'dateTime': messageDateTime
         })
 
-    async def send_data(self, res):
-        # Send message to WebSocket
+    async def send_update(self, res):
+        # Send update to WebSocket
         print(res)
         await self.send(text_data=json.dumps({
             "payload": res,

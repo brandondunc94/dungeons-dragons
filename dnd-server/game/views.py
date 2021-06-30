@@ -89,3 +89,18 @@ def create_character(request, roomCode):
     }
     return Response(data)
 
+@api_view(['GET'])
+def delete_character(request, roomCode, characterId):
+    try:
+        #Get character model and delete it
+        character = Character.objects.get(id=characterId)
+        print('Deleting character ' + str(character.id) + ' ' + character.name + ' from room ' + roomCode)
+        character.delete()
+        status = 'SUCCESS'
+    except:
+        status = 'FAILED' #Error while trying to delete character - character ID is invalid
+    data = {
+        'status': status
+    }
+    return Response(data)
+
