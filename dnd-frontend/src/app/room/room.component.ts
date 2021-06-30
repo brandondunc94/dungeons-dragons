@@ -1,10 +1,11 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { DomSanitizer} from '@angular/platform-browser';
 import { DndDropEvent } from 'ngx-drag-drop';
 import { RoomWebsocketService } from "../room-websocket.service";
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
-import { RoomService, RoomData, Character } from '../room-data.service';
+import { RoomService } from '../room-data.service';
+import { GameDataService, Character, Message } from '../game-data.service';
 import { fromEvent } from 'rxjs';
 import { switchMap, takeUntil, pairwise } from 'rxjs/operators'
 import { HttpClient } from '@angular/common/http';
@@ -24,12 +25,12 @@ export class RoomComponent implements OnInit {
   @Output() isPlaying = new EventEmitter<boolean>(); // Used for going back to home splash page
   characters!: Array<Character>; // Track all characters in room
   selectedCharacter!: Character | null;
-  
-  roomData!: RoomData;
+  messages!: Message[];
+
   @ViewChild('messageInputField') messageInputField!: ElementRef; // Reference to message input field in DOM
 
-  private roomService!: RoomService;
-  private wsService!: RoomWebsocketService;
+  private roomService!: RoomService; // Used to monitor websocket
+  private wsService!: RoomWebsocketService; // Needed for roomService
 
   @ViewChild('map', {static: true}) map!:ElementRef; // Reference to map in DOM
   @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
@@ -37,37 +38,31 @@ export class RoomComponent implements OnInit {
   canvasBackgroundImage!: string;
   isDrawing!: boolean;
   mapDimension = 20;
-  mapColor = '#2f323b';
-  squareSideLength = 80; // pixels
+  mapColor = '#2f323b'; // Default dark grey as map background
+  squareSideLength = 80; // Size of each grid square measured in pixels
 
   //Init toast notification object
   toast = Swal.mixin({
     toast: true,
     position: 'center',
-    customClass: {
-      popup: 'colored-toast'
-    },
+    width: '30%',
     showConfirmButton: false,
     timer: 2500,
   })
 
-  constructor(public matDialog: MatDialog, private sanitizer: DomSanitizer, private http: HttpClient) { 
-    this.roomData = {
-      game: {
-        characters: []
-      },
-      messages: []
-    };
+  constructor(public matDialog: MatDialog, private sanitizer: DomSanitizer, private http: HttpClient, private gameService: GameDataService) {
+    this.messages = []; // Init message list
   }
 
   ngOnInit(): void {
     this.wsService = new RoomWebsocketService;
     this.roomService = new RoomService(this.wsService, this.http);
 
-    // Subscribe to new room data from websocket - we will hit this anytime the websocket sends new data
-    this.roomService.roomData.subscribe(newData => {
-      this.roomData = newData;
+    this.getLatestGameData();
+    // Subscribe to new room data from websocket - we will hit this anytime the websocket receives new data
+    this.roomService.roomData.subscribe( () => {
       this.getLatestCanvas();
+      this.getLatestGameData();
       console.log("Received new data from websocket.");
     });
 
@@ -98,10 +93,10 @@ export class RoomComponent implements OnInit {
   }
 
   onCharacterDrop(event:DndDropEvent, squareIndex: number) {
-    let characterDropped = this.roomData.game.characters.find(character => character.id === event.data.id); // Find character in array
+    let characterDropped = this.characters.find(character => character.id === event.data.id); // Find character in array
     if (characterDropped && squareIndex > -1){
       characterDropped.position = squareIndex;
-      this.roomService.roomData.next(this.roomData); // Send update to server
+      this.roomService.roomData.next(); // Send update to server
       console.log(characterDropped);
     }
   }
@@ -116,11 +111,11 @@ export class RoomComponent implements OnInit {
     }
   }
 
-  clearMap() { // Yeah you guessed it, this clears the map
+  clearMap() { // Clear the map of all drawings
     this.ctx!.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
   }
 
-  toggleMapDrawing() {
+  toggleMapDrawing() { // Toggle whether or not map is in drawing mode
     this.isDrawing = !this.isDrawing; // Flip map drawing flag
     if (this.isDrawing) {
       // Set default properties about the canvas drawing
@@ -154,7 +149,7 @@ export class RoomComponent implements OnInit {
     }
   }
 
-  private captureCanvasDrawing(canvasEl: HTMLCanvasElement) {
+  private captureCanvasDrawing(canvasEl: HTMLCanvasElement) { // Capture drawing on canvas
     // this will capture all mousedown events from the canvas element
     fromEvent(canvasEl, 'mousedown')
       .pipe(
@@ -190,7 +185,7 @@ export class RoomComponent implements OnInit {
       });
   }
 
-  private drawOnCanvas(
+  private drawOnCanvas( // Draw on canvas - used by captureCanvasDrawing
     prevPos: { x: number, y: number }, 
     currentPos: { x: number, y: number }
   ) {
@@ -215,7 +210,7 @@ export class RoomComponent implements OnInit {
     }
   }
 
-  openUpdateCharacterModel(character: Character) {
+  openUpdateCharacterDialogue(character: Character) {
     // Open dialog box
     const dialogConfig = new MatDialogConfig();
     // The user can't close the dialog by clicking outside its body
@@ -234,12 +229,12 @@ export class RoomComponent implements OnInit {
 
     modalDialog.afterClosed().subscribe(updatedCharacter => {
       character = updatedCharacter;
-      this.sendRoomData();
+      this.sendRoomData(); // Send update to websocket
     });
 
   }
 
-  openNewCharacterModel() {
+  openNewCharacterDialogue() {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true; // The user can't close the dialog by clicking outside its body
@@ -256,15 +251,26 @@ export class RoomComponent implements OnInit {
 
     modalDialog.afterClosed().subscribe(newCharacter => {
       if(newCharacter.name) {
-        // Take last character id, add 1, and set as new character id
-        try {
-          newCharacter.id = this.roomData.game.characters[this.roomData.game.characters.length -1].id + 1;
-        } catch {
-          newCharacter.id = 0; // First character, set id = 0
-        }
-        // Add new character to character array
-        this.roomData.game.characters.push(newCharacter);
-        this.sendRoomData(); // Send new data to websocket
+        newCharacter.game_id = this.roomCode; // Set character game id = room code
+
+        this.gameService.createCharacter(this.roomCode, newCharacter).then( status => {
+          if(status == 'SUCCESS') {
+            // Add new character to character array
+            this.characters.push(newCharacter);
+            this.sendRoomData(); // Send update to websocket
+            this.toast.fire({ //Fire success toast
+            icon: 'success',
+            iconColor: 'green',
+            titleText: 'New character created successfully.'
+            })
+          } else {
+            this.toast.fire({ // Fire error toast
+              icon: 'error',
+              iconColor: 'red',
+              titleText: 'Unable to create new character. Please ensure all fields are filled out.'
+              })
+          }
+        });
       }
     });
   }
@@ -281,41 +287,32 @@ export class RoomComponent implements OnInit {
         message: message,
         dateTime: new Date()
       }
-      this.roomData.messages.push(newMessage);
+      this.messages.push(newMessage);
       this.sendRoomData();
     }
     this.messageInputField.nativeElement.value = ''; // Reset input field
   }
 
-  // Sends latest room data to websocket
-  sendRoomData() {
-    this.roomService.roomData.next(this.roomData);
+  // Game data Websocket and API methods
+  sendRoomData() { // Sends update notice to websocket
+    this.roomService.roomData.next();
+  }
+
+  getLatestGameData() { // Make API calls to retrieve latest game data (characters, messages, etc.)
+    this.gameService.getCharacters(this.roomCode).then(response => {
+      this.characters = response;
+      console.log(this.characters);
+    })
   }
 
   public downloadJsonHref: any;
   saveGame() {
     // Save logic goes here, write to DB or create json file and give to user
     {
-      var gameDataJson = JSON.stringify(this.roomData);
+      var gameDataJson = JSON.stringify(this.characters);
       var uri = this.sanitizer.bypassSecurityTrustUrl("data:text/json;charset=UTF-8," + encodeURIComponent(gameDataJson));
       this.downloadJsonHref = uri;
     }
-  }
-
-  readFile($event: any){
-    var file:File = $event.target.files[0]; 
-    var myReader:FileReader = new FileReader();
-
-    myReader.onloadend = (e) => {
-      this.loadGame(myReader.result); // Once file has been read by FileReader, load game data
-    };
-
-    myReader.readAsText(file);
-  }
-
-  loadGame(gameFileData: any) : void {
-    this.roomData = JSON.parse(gameFileData);
-    this.sendRoomData();
   }
 
   disconnect() {

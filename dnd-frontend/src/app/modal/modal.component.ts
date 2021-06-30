@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, Input } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Character } from '../room-data.service';
+import { GameDataService, Character } from '../game-data.service';
 import { DndApiService } from '../dnd-api.service';
 
 @Component({
@@ -10,58 +10,39 @@ import { DndApiService } from '../dnd-api.service';
 })
 export class ModalComponent implements OnInit {
 
-  @Input() character!: Character;
+  @Input() character = new Character;
 
   constructor(
     public dndApiService: DndApiService,
     public dialogRef: MatDialogRef<ModalComponent>,
+    private gameService: GameDataService,
     @Inject(MAT_DIALOG_DATA) public modalData: any
   ) {
     console.log(this.dndApiService.characterClasses);
     if (modalData.character) { // If character object was passed in, display it in modal
       this.character = modalData.character;
       console.log(this.character);
-    } else {
-      this.character = { // Initialize character object since we are creating a new character
-        id: -1,
-        name: '',
-        health: 0,
-        maxHealth: 0,
-        position: 0,
-        type: 'NPC', // PC or NPC
-        class: ''
-      }
     }
   }
 
   ngOnInit() { 
   }
 
-  actionFunction() {
-    switch (this.modalData.name) {
-      case "new-character":
-        this.createCharacter();
-        break;
-      case "update-character":
-        this.updateCharacter();
-        break;
-      default:
-        break;
-    }
-
-    this.closeModal();
+  saveCreateCharacter() {
+    this.dialogRef.close(this.character); // Pass new/updated character back to parent component
   }
 
-  createCharacter() {
-    console.log('New character created');
+  deleteCharacter() {
+    console.log('Deleting Character ' + this.character.name);
+    // Call API to delete character from DB
+    this.gameService.deleteCharacter(this.character.game_id, this.character.id).then(response => {
+      console.log('Character deleted successfully.');
+      this.dialogRef.close();
+    });
   }
 
-  updateCharacter() {
-    console.log('Character updated');
-  }
-
-  closeModal() {
-    this.dialogRef.close(this.character);
+  cancel() {
+    this.dialogRef.close();
   }
 
 }

@@ -2,46 +2,21 @@ import { Injectable } from '@angular/core';
 import { Subject } from "rxjs";
 import { map } from 'rxjs/operators';
 import { RoomWebsocketService } from "./room-websocket.service";
+import { GameData, Message } from './game-data.service';
 import { environment } from '../environments/environment';
 import { HttpClient } from '@angular/common/http';
  
 const CHAT_URL = environment.websocketURL;
 
-export interface RoomData {
-  game: GameData,
-  messages: Array<Message>
-}
-
-export interface GameData {
-  characters: Array<Character>
-}
-
-export interface Message {
-  author: string;
-  message: string;
-  dateTime: Date;
-}
-
-export class Character {
-  id!: number;
-  name!: string;
-  health!: number;
-  maxHealth!: number;
-  position!: number;
-  type!: string; // PC or NPC
-  class!: string;
-}
-
 @Injectable()
 export class RoomService {
-  public roomData: Subject<RoomData>;
+  public roomData: Subject<boolean>;
   public CANVAS_URL = environment.canvasImageUpload;
 
   constructor(wsService: RoomWebsocketService, private http: HttpClient) { // Receive room data from websocket
-    this.roomData = <Subject<RoomData>>wsService.connect(CHAT_URL).pipe(map(
-      (response: MessageEvent): RoomData => { 
-        let data = JSON.parse(response.data);
-        return data.payload.roomData;
+    this.roomData = <Subject<boolean>>wsService.connect(CHAT_URL).pipe(map(
+      (response: MessageEvent): boolean => { 
+        return true;
       }
     ));
   }
@@ -56,5 +31,4 @@ export class RoomService {
       console.log(response);
     });
   }
-
 }

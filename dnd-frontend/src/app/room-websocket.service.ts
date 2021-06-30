@@ -37,7 +37,7 @@ export class RoomWebsocketService {
       next: (data: Object) => {
         if (this.websocket.readyState === WebSocket.OPEN) {
           this.websocket.send(JSON.stringify(data));
-          console.log('Sending message ' + JSON.stringify(data));
+          console.log('Sending update to websocket');
         }
       }
     };

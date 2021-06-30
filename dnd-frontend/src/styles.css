@@ -43,3 +43,9 @@ textarea:focus, input:focus{
   color: white !important;
   width: 120px;
 }
+
+.red-btn {
+  background-color: red !important;
+  color: white !important;
+  width: 120px;
+}
