@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib import admin
-from django.db.models.fields import CharField
 from .storage import OverwriteStorage
 import uuid
 
@@ -19,3 +18,10 @@ class Character(models.Model):
     type = models.CharField(max_length=30)
     characterClass = models.CharField(max_length=30)
 admin.site.register(Character)
+
+class Message(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    author = models.CharField(max_length=30)
+    messageText = models.TextField(max_length=500)
+    messageDateTime = models.DateTimeField(auto_now_add=True)
+admin.site.register(Message)

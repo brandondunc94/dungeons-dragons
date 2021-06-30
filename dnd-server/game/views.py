@@ -1,8 +1,8 @@
 from typing import cast
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Game, Character
-from .serializers import CharacterSerializer
+from .models import Game, Character, Message
+from .serializers import CharacterSerializer, MessageSerializer
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework.decorators import api_view
@@ -104,3 +104,36 @@ def delete_character(request, roomCode, characterId):
     }
     return Response(data)
 
+@api_view(['POST'])
+def upload_message(request, roomCode):
+    print('Uploading new message for room: ' + roomCode)
+    try:
+        data = JSONParser().parse(request)
+        serializer = MessageSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            status = 'SUCCESS'
+        else:
+            status = 'FAILED' #Not all fields sent - unable to create new message
+    except:
+        status = 'FAILED' #Error while trying to create new message - room code might be invalid
+    data = {
+        'status': status
+    }
+    return Response(data)
+
+@api_view(['GET'])
+def get_messages(request, roomCode):
+    try:
+        print('Getting messages for room: ' + roomCode)
+        messages = Message.objects.filter(game_id=roomCode)
+        messagePayload = MessageSerializer(messages, many=True)
+        status = 'SUCCESS'
+    except:
+        status = 'FAILED'
+        messagePayload = ''
+    data = {
+        'status': status,
+        'messages': messagePayload.data
+    }
+    return Response(data)
