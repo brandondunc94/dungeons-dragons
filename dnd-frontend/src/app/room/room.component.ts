@@ -139,7 +139,7 @@ export class RoomComponent implements OnInit {
                 iconColor: 'green',
                 title: 'Map uploaded successfully'
               })
-              this.sendRoomData(); // Tell other players the map has been updated
+              this.sendWebsocketUpdate(); // Tell other players the map has been updated
             }
           },
           'image/png',
@@ -229,7 +229,7 @@ export class RoomComponent implements OnInit {
 
     modalDialog.afterClosed().subscribe(updatedCharacter => {
       character = updatedCharacter;
-      this.sendRoomData(); // Send update to websocket
+      this.sendWebsocketUpdate(); // Send update to websocket
     });
 
   }
@@ -257,7 +257,7 @@ export class RoomComponent implements OnInit {
           if(status == 'SUCCESS') {
             // Add new character to character array
             this.characters.push(newCharacter);
-            this.sendRoomData(); // Send update to websocket
+            this.sendWebsocketUpdate(); // Send update to websocket
             this.toast.fire({ //Fire success toast
             icon: 'success',
             iconColor: 'green',
@@ -283,18 +283,21 @@ export class RoomComponent implements OnInit {
   sendMessage(message: string) {
     if (message != '') {
       let newMessage = {
+        game_id: this.roomCode,
         author: this.username,
-        message: message,
-        dateTime: new Date()
+        messageText: message,
+        messageDateTime: new Date()
       }
       this.messages.push(newMessage);
-      this.sendRoomData();
+      this.gameService.uploadMessage(this.roomCode, newMessage).then(() => {
+        this.sendWebsocketUpdate();
+      });
     }
     this.messageInputField.nativeElement.value = ''; // Reset input field
   }
 
   // Game data Websocket and API methods
-  sendRoomData() { // Sends update notice to websocket
+  sendWebsocketUpdate() { // Sends update notice to websocket
     this.roomService.roomData.next();
   }
 
@@ -303,11 +306,15 @@ export class RoomComponent implements OnInit {
       this.characters = response;
       console.log(this.characters);
     })
+    this.gameService.getMessages(this.roomCode).then(response => {
+      this.messages = response;
+      console.log(this.messages);
+    })
   }
 
   public downloadJsonHref: any;
   saveGame() {
-    // Save logic goes here, write to DB or create json file and give to user
+    // Save logic goes here, write to json file and give to user
     {
       var gameDataJson = JSON.stringify(this.characters);
       var uri = this.sanitizer.bypassSecurityTrustUrl("data:text/json;charset=UTF-8," + encodeURIComponent(gameDataJson));

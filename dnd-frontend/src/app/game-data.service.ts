@@ -31,9 +31,10 @@ export class Character {
 }
 
 export interface Message {
+  game_id: string,
   author: string;
-  message: string;
-  dateTime: Date;
+  messageText: string;
+  messageDateTime: Date;
 }
 
 @Injectable({
@@ -109,7 +110,28 @@ export class GameDataService {
   }
 
   uploadMessage(roomCode: string, message: Message) {
-    
+    console.log('Uploading message to server for room ' + roomCode);
+    let body = JSON.stringify(message);
+    let promise = new Promise<string>((resolve,reject) => {
+      this.http.post<any>(this.API_URL  + 'upload_message/' + roomCode + '/', body, {headers: this.headers})
+      .toPromise()
+      .then(response => {
+        resolve(response.status);
+      }
+      );
+    });
+    return promise;
   }
 
+  getMessages(roomCode: string) {
+    let promise = new Promise<Message[]>((resolve,reject) => {
+      this.http.get<any>(this.API_URL  + 'get_messages/' + roomCode)
+      .toPromise()
+      .then(response => {
+        resolve(response.messages);
+      }
+      );
+    });
+    return promise;
+  }
 }
