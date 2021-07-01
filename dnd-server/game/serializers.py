@@ -5,6 +5,7 @@ class CharacterSerializer(serializers.ModelSerializer):
     game_id = serializers.CharField()
     class Meta:
         model = Character
+        read_only_fields = ('id',)
         fields = ('game_id', 'id', 'name', 'health', 'maxHealth', 'position', 'type', 'characterClass')
     
     def create(self, validated_data):
@@ -13,6 +14,16 @@ class CharacterSerializer(serializers.ModelSerializer):
         newCharacter = Character.objects.create(game=gameObject, **validated_data)
         return newCharacter
     
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.health = validated_data.get('health', instance.health)
+        instance.maxHealth = validated_data.get('maxHealth', instance.maxHealth)
+        instance.position = validated_data.get('position', instance.position)
+        instance.type = validated_data.get('type', instance.type)
+        instance.characterClass = validated_data.get('characterClass', instance.characterClass)
+        instance.save()
+        return instance
+
 class MessageSerializer(serializers.ModelSerializer):
     game_id = serializers.CharField()
     class Meta:

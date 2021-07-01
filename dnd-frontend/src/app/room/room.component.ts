@@ -228,8 +228,23 @@ export class RoomComponent implements OnInit {
     const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
 
     modalDialog.afterClosed().subscribe(updatedCharacter => {
-      character = updatedCharacter;
-      this.sendWebsocketUpdate(); // Send update to websocket
+      this.gameService.createUpdateCharacter(this.roomCode, character).then(status => {
+        if(status == 'SUCCESS') {
+          character = updatedCharacter;
+          this.sendWebsocketUpdate(); // Send update to websocket
+          this.toast.fire({ //Fire success toast
+          icon: 'success',
+          iconColor: 'green',
+          titleText: 'Character updated successfully.'
+          })
+        } else {
+          this.toast.fire({ // Fire error toast
+            icon: 'error',
+            iconColor: 'red',
+            titleText: 'Unable to update character.'
+            })
+        }
+      });
     });
 
   }
@@ -253,7 +268,7 @@ export class RoomComponent implements OnInit {
       if(newCharacter.name) {
         newCharacter.game_id = this.roomCode; // Set character game id = room code
 
-        this.gameService.createCharacter(this.roomCode, newCharacter).then( status => {
+        this.gameService.createUpdateCharacter(this.roomCode, newCharacter).then(status => {
           if(status == 'SUCCESS') {
             // Add new character to character array
             this.characters.push(newCharacter);

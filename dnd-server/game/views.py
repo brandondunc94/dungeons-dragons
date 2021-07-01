@@ -72,13 +72,15 @@ def get_characters(request, roomCode):
     return Response(data)
 
 @api_view(['POST'])
-def create_character(request, roomCode):
-    print('Creating new character for room: ' + roomCode)
+def create_update_character(request, roomCode, characterId=''):
     try:
-        data = JSONParser().parse(request)
-        serializer = CharacterSerializer(data=data)
+        serializer = CharacterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            try:
+                character = Character.objects.get(id=characterId)
+                serializer.update(character, serializer.validated_data)
+            except:
+                serializer.create(serializer.validated_data)
             status = 'SUCCESS'
         else:
             status = 'FAILED' #Not all fields sent - unable to create character

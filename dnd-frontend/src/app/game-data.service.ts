@@ -71,11 +71,15 @@ export class GameDataService {
     return promise;
   }
   
-  createCharacter(roomCode: string, character: Character) {
+  createUpdateCharacter(roomCode: string, character: Character) {
     console.log('Creating new character for room ' + roomCode);
+    let apiEndpoint = 'create_update_character/' + roomCode + '/';
+    if(character.id != '') {
+      apiEndpoint += character.id + '/';
+    }
     let body = JSON.stringify(character);
     let promise = new Promise<string>((resolve,reject) => {
-      this.http.post<any>(this.API_URL  + 'create_character/' + roomCode + '/', body, {headers: this.headers})
+      this.http.post<any>(this.API_URL  + apiEndpoint, body, {headers: this.headers})
       .toPromise()
       .then(response => {
         resolve(response.status);
