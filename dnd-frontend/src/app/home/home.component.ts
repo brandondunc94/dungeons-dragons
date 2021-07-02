@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { RoomWebsocketService } from "../room-websocket.service";
-import { RoomService } from "../room-data.service";
 import { GameDataService } from '../game-data.service';
 import Swal from 'sweetalert2';
 
@@ -8,7 +7,7 @@ import Swal from 'sweetalert2';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  providers: [RoomWebsocketService, RoomService, GameDataService]
+  providers: [RoomWebsocketService, GameDataService]
 })
 export class HomeComponent implements OnInit {
 

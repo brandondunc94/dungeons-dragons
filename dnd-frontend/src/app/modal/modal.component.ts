@@ -18,31 +18,28 @@ export class ModalComponent implements OnInit {
     private gameService: GameDataService,
     @Inject(MAT_DIALOG_DATA) public modalData: any
   ) {
-    console.log(this.dndApiService.characterClasses);
     if (modalData.character) { // If character object was passed in, display it in modal
-      this.character = modalData.character;
+      this.character = Object.assign({}, modalData.character); // Make shallow copy
       console.log(this.character);
     }
   }
 
-  ngOnInit() { 
-  }
+  ngOnInit() {}
 
   saveCreateCharacter() {
-    this.dialogRef.close(this.character); // Pass new/updated character back to parent component
+    this.dialogRef.close({'status': 'CREATE/UPDATE', 'character': this.character}); // Pass new/updated character back to parent component
   }
 
   deleteCharacter() {
     console.log('Deleting Character ' + this.character.name);
     // Call API to delete character from DB
-    this.gameService.deleteCharacter(this.character.game_id, this.character.id).then(response => {
-      console.log('Character deleted successfully.');
-      this.dialogRef.close();
+    this.gameService.deleteCharacter(this.character.game_id, this.character.id).then(() => {
+      this.dialogRef.close({'status': 'DELETE'});
     });
   }
 
   cancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({'status': 'CANCEL'});
   }
 
 }

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as Rx from "rxjs";
+import { map } from 'rxjs/operators';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -7,15 +9,19 @@ import * as Rx from "rxjs";
 export class RoomWebsocketService {
 
   websocket!: WebSocket;
+  public subject!: Rx.Subject<MessageEvent>;
 
-  constructor() { }
+  WEBSOCKET_URL = environment.websocketURL;
 
-  private subject!: Rx.Subject<MessageEvent>;
+  constructor() {
+    this.subject = <Rx.Subject<MessageEvent>>this.create(this.WEBSOCKET_URL).pipe(map(
+      (response: MessageEvent): MessageEvent => { 
+        return JSON.parse(JSON.stringify(response));
+      }
+    ));
+   }
 
-  public connect(url: string): Rx.Subject<MessageEvent> {
-    if (!this.subject) {
-      this.subject = this.create(url);
-    }
+  public connect(): Rx.Subject<MessageEvent> {
     return this.subject;
   }
 

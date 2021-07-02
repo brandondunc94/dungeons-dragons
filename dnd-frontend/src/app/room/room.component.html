@@ -37,7 +37,7 @@
     </div>
     <div class='col-8 p-0 map-container'>
         <div #map class='map grid dndDragzone'>
-            <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone] (dndDrop)='onCharacterDrop($event,i)'>
+            <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone]>
                 <ng-container *ngFor='let character of characters'>
                     <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC'}">
                         <div class='draggable'

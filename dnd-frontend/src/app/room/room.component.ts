@@ -1,10 +1,9 @@
 import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { DomSanitizer} from '@angular/platform-browser';
-import { DndDropEvent } from 'ngx-drag-drop';
+// import { DndDropEvent } from 'ngx-drag-drop';
 import { RoomWebsocketService } from "../room-websocket.service";
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
-import { RoomService } from '../room-data.service';
 import { GameDataService, Character, Message } from '../game-data.service';
 import { fromEvent } from 'rxjs';
 import { switchMap, takeUntil, pairwise } from 'rxjs/operators'
@@ -29,8 +28,7 @@ export class RoomComponent implements OnInit {
 
   @ViewChild('messageInputField') messageInputField!: ElementRef; // Reference to message input field in DOM
 
-  private roomService!: RoomService; // Used to monitor websocket
-  private wsService!: RoomWebsocketService; // Needed for roomService
+  private wsService!: RoomWebsocketService; // Used to monitor websocket
 
   @ViewChild('map', {static: true}) map!:ElementRef; // Reference to map in DOM
   @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
@@ -55,27 +53,25 @@ export class RoomComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.wsService = new RoomWebsocketService;
-    this.roomService = new RoomService(this.wsService, this.http);
+    this.wsService = new RoomWebsocketService; // Init websocket connection
 
-    this.getLatestGameData();
-    // Subscribe to new room data from websocket - we will hit this anytime the websocket receives new data
-    this.roomService.roomData.subscribe( () => {
-      this.getLatestCanvas();
-      this.getLatestGameData();
-      console.log("Received new data from websocket.");
-    });
-
-    this.createMapGrid();
+    this.getLatestGameData(); // Retirieve game data from API call
+    this.createMapGrid(); // Generate map grid
     this.map.nativeElement.style.backgroundColor = '#2f323b'; // Set default map background color
   
     // Init canvas values
     this.ctx = this.canvas.nativeElement.getContext('2d'); // canvas context, used to draw
-    this.getLatestCanvas();
-    this.isDrawing = false;
+    this.getLatestCanvas(); // Retrieve latest canvas image from server
+    this.isDrawing = false; // Default is that the user is not drawing on the canvas
     this.canvas.nativeElement.width = this.map.nativeElement.offsetWidth; // Set canvas to same size as map
     this.canvas.nativeElement.height = this.map.nativeElement.offsetHeight;
 
+    // Subscribe to new room data from websocket - we will hit this anytime the websocket receives new data
+    this.wsService.subject.subscribe( () => {
+      this.getLatestCanvas();
+      this.getLatestGameData();
+      console.log("Received update from websocket.");
+    });
   }
 
   // Map Methods
@@ -92,14 +88,15 @@ export class RoomComponent implements OnInit {
     this.map.nativeElement.style.backgroundColor = mapColor;
   }
 
-  onCharacterDrop(event:DndDropEvent, squareIndex: number) {
-    let characterDropped = this.characters.find(character => character.id === event.data.id); // Find character in array
-    if (characterDropped && squareIndex > -1){
-      characterDropped.position = squareIndex;
-      this.roomService.roomData.next(); // Send update to server
-      console.log(characterDropped);
-    }
-  }
+  // onCharacterDrop(event:DndDropEvent, squareIndex: number) { DISABLED FOR NOW SINCE CANVAS BREAKS THE DRAG & DROP FUNCTIONALITY
+  // THIS IS WHAT WOULD GO IN THE TEMPLATE on a map square - (dndDrop)='onCharacterDrop($event,i)'
+  //   let characterDropped = this.characters.find(character => character.id === event.data.id); // Find character in array
+  //   if (characterDropped && squareIndex > -1){
+  //     characterDropped.position = squareIndex;
+  //     this.roomService.roomDataUpdate.next(); // Send update to server
+  //     console.log(characterDropped);
+  //   }
+  // }
 
   getLatestCanvas() { // Retrieve the latest canvas image from the server and draw it on the canvas
     let newCanvas = new Image();
@@ -133,13 +130,15 @@ export class RoomComponent implements OnInit {
         this.canvas.nativeElement.toBlob( // Convert canvas to blob
           blob => {
             if(blob){
-              this.roomService.uploadCanvasImage(blob, this.roomCode); // Upload the canvas image to the server
-              this.toast.fire({
-                icon: 'success',
-                iconColor: 'green',
-                title: 'Map uploaded successfully'
-              })
-              this.sendWebsocketUpdate(); // Tell other players the map has been updated
+               // Upload the canvas image to the server
+              this.gameService.uploadCanvasImage(blob, this.roomCode).then(() => {
+                this.toast.fire({
+                  icon: 'success',
+                  iconColor: 'green',
+                  title: 'Map uploaded successfully'
+                })
+                this.sendWebsocketUpdate(); // Tell other players the map has been updated
+              });
             }
           },
           'image/png',
@@ -227,24 +226,32 @@ export class RoomComponent implements OnInit {
     // https://material.angular.io/components/dialog/overview
     const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
 
-    modalDialog.afterClosed().subscribe(updatedCharacter => {
-      this.gameService.createUpdateCharacter(this.roomCode, character).then(status => {
-        if(status == 'SUCCESS') {
-          character = updatedCharacter;
-          this.sendWebsocketUpdate(); // Send update to websocket
-          this.toast.fire({ //Fire success toast
+    modalDialog.afterClosed().subscribe(modalResult => {
+      if(modalResult.status === 'CREATE/UPDATE') { //Only make api update call if character was returned from modal
+        this.gameService.createUpdateCharacter(this.roomCode, modalResult.character).then(status => {
+          if(status == 'SUCCESS') {
+            this.sendWebsocketUpdate(); // Send update to websocket
+            this.toast.fire({ //Fire success toast
+            icon: 'success',
+            iconColor: 'green',
+            titleText: 'Character updated successfully.'
+            })
+          } else {
+            this.toast.fire({ // Fire error toast
+              icon: 'error',
+              iconColor: 'red',
+              titleText: 'Unable to update character.'
+              })
+          }
+        });
+      } else if (modalResult.status === 'DELETE') { // Character was deleted
+        this.toast.fire({ //Fire success toast
           icon: 'success',
           iconColor: 'green',
-          titleText: 'Character updated successfully.'
+          titleText: 'Character deleted successfully.'
           })
-        } else {
-          this.toast.fire({ // Fire error toast
-            icon: 'error',
-            iconColor: 'red',
-            titleText: 'Unable to update character.'
-            })
-        }
-      });
+        this.sendWebsocketUpdate(); // Send update to websocket
+      }
     });
 
   }
@@ -264,14 +271,11 @@ export class RoomComponent implements OnInit {
     // https://material.angular.io/components/dialog/overview
     const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
 
-    modalDialog.afterClosed().subscribe(newCharacter => {
-      if(newCharacter.name) {
-        newCharacter.game_id = this.roomCode; // Set character game id = room code
-
-        this.gameService.createUpdateCharacter(this.roomCode, newCharacter).then(status => {
+    modalDialog.afterClosed().subscribe(modalResult => {
+      if(modalResult.status === 'CREATE/UPDATE') { 
+        modalResult.character.game_id = this.roomCode; // Set character game id = room code
+        this.gameService.createUpdateCharacter(this.roomCode, modalResult.character).then(status => {
           if(status == 'SUCCESS') {
-            // Add new character to character array
-            this.characters.push(newCharacter);
             this.sendWebsocketUpdate(); // Send update to websocket
             this.toast.fire({ //Fire success toast
             icon: 'success',
@@ -312,8 +316,8 @@ export class RoomComponent implements OnInit {
   }
 
   // Game data Websocket and API methods
-  sendWebsocketUpdate() { // Sends update notice to websocket
-    this.roomService.roomData.next();
+  private sendWebsocketUpdate() { // Sends update notice to websocket
+    this.wsService.subject.next();
   }
 
   getLatestGameData() { // Make API calls to retrieve latest game data (characters, messages, etc.)

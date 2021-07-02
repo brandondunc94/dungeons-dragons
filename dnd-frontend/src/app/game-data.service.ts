@@ -42,6 +42,8 @@ export interface Message {
 })
 export class GameDataService {
   public API_URL = environment.apiUrl;
+  public CANVAS_URL = environment.canvasImageUpload;
+
   headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
   constructor(private http: HttpClient) { }
 
@@ -138,4 +140,21 @@ export class GameDataService {
     });
     return promise;
   }
+
+  // POST method for when a player uploads a new version of the room's canvas
+  uploadCanvasImage(image: Blob, roomCode: string) {
+    const formData: FormData = new FormData(); // Create form for POST call and attach image blob
+    formData.append('canvasImageKey', image, roomCode);
+
+    let promise = new Promise<string>((resolve,reject) => {
+      this.http.post<any>(this.CANVAS_URL + roomCode + '/', formData)
+      .toPromise()
+      .then(response => {
+        resolve(response.status);
+      }
+      );
+    });
+    return promise;
+  }
+
 }
