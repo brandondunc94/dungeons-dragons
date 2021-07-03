@@ -55,8 +55,8 @@
     </div>
     <div class='col-1 d-flex flex-column action-panel text-center'>
         <div class='flex-fill mt-3'>
-            <h3>Dungeon Master</h3>
-            <button type='button' class='btn add-character-btn mb-2'  [disabled]="!isDungeonMaster" (click)='openNewCharacterDialogue()'>New Character</button>
+            <h3>Controls</h3>
+            <button type='button' class='btn add-character-btn mb-2' (click)='openNewCharacterDialogue()'>New Character</button>
             <button type='button' class='btn map-drawing-btn mb-2'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Upload Map' : 'Draw Map' }}</button>
             <ng-container *ngIf='isDrawing'>
                 <button type='button' class='btn map-drawing-btn mb-2'  [disabled]="!isDungeonMaster" (click)='clearMap()'>Clear Map</button>
