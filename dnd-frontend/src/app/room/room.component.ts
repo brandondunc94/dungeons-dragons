@@ -37,6 +37,8 @@ export class RoomComponent implements OnInit {
   isDrawing!: boolean;
   mapDimension = 20;
   mapColor = '#2f323b'; // Default dark grey as map background
+  paintBrushColor = '#8510d8' // Default paint brush color to brown
+  paintBrushSize = 10;
   squareSideLength = 80; // Size of each grid square measured in pixels
 
   //Init toast notification object
@@ -63,8 +65,14 @@ export class RoomComponent implements OnInit {
     this.ctx = this.canvas.nativeElement.getContext('2d'); // canvas context, used to draw
     this.getLatestCanvas(); // Retrieve latest canvas image from server
     this.isDrawing = false; // Default is that the user is not drawing on the canvas
+    
     this.canvas.nativeElement.width = this.map.nativeElement.offsetWidth; // Set canvas to same size as map
     this.canvas.nativeElement.height = this.map.nativeElement.offsetHeight;
+
+    // Set default properties about the canvas drawing - This must come after the canvas size has been set
+    this.ctx!.lineWidth = 3;
+    this.ctx!.lineCap = 'round';
+    this.ctx!.strokeStyle = this.paintBrushColor;
 
     // Subscribe to new room data from websocket - we will hit this anytime the websocket receives new data
     this.wsService.subject.subscribe( () => {
@@ -112,13 +120,18 @@ export class RoomComponent implements OnInit {
     this.ctx!.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
   }
 
+  changeBrushColor(brushColor: string ) {
+    this.ctx!.strokeStyle = brushColor;
+  }
+
+  changeBrushSize(brushWidth: string) {
+    this.paintBrushSize = parseInt(brushWidth);
+    this.ctx!.lineWidth = this.paintBrushSize;
+  }
+
   toggleMapDrawing() { // Toggle whether or not map is in drawing mode
     this.isDrawing = !this.isDrawing; // Flip map drawing flag
     if (this.isDrawing) {
-      // Set default properties about the canvas drawing
-      this.ctx!.lineWidth = 2;
-      this.ctx!.lineCap = 'round';
-      this.ctx!.strokeStyle = 'red';
       // Start capturing canvas drawing from user
       this.captureCanvasDrawing(this.canvas.nativeElement);
     }

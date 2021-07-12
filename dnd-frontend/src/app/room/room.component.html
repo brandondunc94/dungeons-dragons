@@ -60,6 +60,12 @@
             <button type='button' class='btn map-drawing-btn mb-2'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Upload Map' : 'Draw Map' }}</button>
             <ng-container *ngIf='isDrawing'>
                 <button type='button' class='btn map-drawing-btn mb-2'  [disabled]="!isDungeonMaster" (click)='clearMap()'>Clear Map</button>
+                <div>
+                    <h3 for="colorpicker" class='mb-0'>Brush Color</h3>
+                    <input type="color" id="colorpicker" name="paintBrushColor" #paintBrushColorInput value={{this.paintBrushColor}} (click)='changeBrushColor(paintBrushColorInput.value)'>
+                    <h3 for="colorpicker" class='mb-0'>Brush Width {{this.paintBrushSize}}</h3>                    
+                    <input type="range" id="paintBrushSizeSlider" min="1" max="100" default='10' value={{this.paintBrushSize}} class="slider" #paintBrushSizeInput (click)='changeBrushSize(paintBrushSizeInput.value)'>
+                </div>
             </ng-container>
             <div>
                 <h3 for="colorpicker" class='mb-0'>Map Background</h3>
