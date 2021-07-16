@@ -1,7 +1,7 @@
 <div *ngIf='!isPlaying' class='page-container d-flex'>
     <div class='join-room-container'>
         <h1 class='text-white text-center'>D&D Rooms</h1>
-        <div class='d-flex flex-column input-container'>
+        <div class='d-flex flex-column flex-fill input-container'>
             <input type="text" class='join-room-input' #roomCode placeholder='Room Code'>
             <input type="text" class='join-room-input' #username placeholder='Name'>
             <h3 class='text-white mb-0'>Are you the Dungeon Master?</h3>
@@ -9,7 +9,7 @@
                 <mat-button-toggle value="true">Yes</mat-button-toggle>
                 <mat-button-toggle value="false">No</mat-button-toggle>
             </mat-button-toggle-group>
-            <input type="button" class='join-room-btn' (click)='joinRoom(roomCode.value, username.value, dungeonMasterToggle.value)' value="Join Room">
+            <input type="button" class='join-room-btn mt-auto' (click)='joinRoom(roomCode.value, username.value, dungeonMasterToggle.value)' value="Join Room">
         </div>
     </div>
 </div>
