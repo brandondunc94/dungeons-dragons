@@ -37,7 +37,7 @@ export class RoomComponent implements OnInit {
   isDrawing!: boolean;
   mapDimension = 20;
   mapColor = '#2f323b'; // Default dark grey as map background
-  paintBrushColor = '#8510d8' // Default paint brush color to brown
+  paintBrushColor = '#ffffff'; // Default paint brush color to brown
   paintBrushSize = 10;
   squareSideLength = 80; // Size of each grid square measured in pixels
 
@@ -45,7 +45,7 @@ export class RoomComponent implements OnInit {
   toast = Swal.mixin({
     toast: true,
     position: 'center',
-    width: '30%',
+    width: '300px',
     showConfirmButton: false,
     timer: 2500,
   })
@@ -109,15 +109,22 @@ export class RoomComponent implements OnInit {
   getLatestCanvas() { // Retrieve the latest canvas image from the server and draw it on the canvas
     let newCanvas = new Image();
     newCanvas.setAttribute('crossOrigin', 'anonymous');
-    newCanvas.src = environment.canvasImageUrl + this.roomCode + '.png#' + new Date().getTime();
+    newCanvas.src = environment.canvasImageUrl + this.roomCode + '.png?dummy=' + new Date().getTime();
     console.log('Retrieving canvas at url ' + newCanvas.src);
     newCanvas.onload = () => {
+      this.clearMap();
       this.ctx!.drawImage(newCanvas,0,0);   
     }
   }
 
   clearMap() { // Clear the map of all drawings
     this.ctx!.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+
+    // Draw small circle in top left
+    this.ctx!.beginPath();
+    this.ctx!.strokeStyle = 'white';
+    this.ctx!.arc(10, 10, 3, 0, 2 * Math.PI);
+    this.ctx!.stroke();
   }
 
   changeBrushColor(brushColor: string ) {
@@ -333,7 +340,7 @@ export class RoomComponent implements OnInit {
     this.wsService.subject.next();
   }
 
-  getLatestGameData() { // Make API calls to retrieve latest game data (characters, messages, etc.)
+  getLatestGameData() { // Make API calls to retrieve latest game data (characters, messages, canvas etc.)
     this.gameService.getCharacters(this.roomCode).then(response => {
       this.characters = response;
       console.log(this.characters);
@@ -342,6 +349,20 @@ export class RoomComponent implements OnInit {
       this.messages = response;
       console.log(this.messages);
     })
+    this.getLatestCanvas();
+  }
+
+  refresh() {
+    this.getLatestGameData();
+    this.toast.fire({ //Fire success toast
+      icon: 'success',
+      iconColor: 'green',
+      titleText: 'Refreshed',
+      position: 'top',
+      width: '200px',
+      showConfirmButton: false,
+      timer: 2500,
+      })
   }
 
   public downloadJsonHref: any;

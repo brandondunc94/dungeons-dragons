@@ -35,7 +35,7 @@
             </section>
         </section>
     </div>
-    <div class='col-8 p-0 map-container'>
+    <div class='col-xxl-8 col-xl-7 col-lg-8 col-md-7 col-sm-7 d-flex flex-column p-0 map-container'>
         <div #map class='map grid dndDragzone'>
             <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone]>
                 <ng-container *ngFor='let character of characters'>
@@ -53,28 +53,32 @@
         <canvas #canvas class='canvas'>
         </canvas>
     </div>
-    <div class='col-1 d-flex flex-column action-panel text-center'>
-        <div class='flex-fill mt-3'>
+    <div class='col-xxl-1 col-xl-2 col-lg-2 col-md-2 col-sm-2 d-flex flex-column p-0 action-panel'>
+        <div class='d-flex flex-column flex-fill mt-3 align-items-center'>
             <h3>Controls</h3>
-            <button type='button' class='btn add-character-btn mb-2' (click)='openNewCharacterDialogue()'>New Character</button>
-            <button type='button' class='btn map-drawing-btn mb-2'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Upload Map' : 'Draw Map' }}</button>
-            <ng-container *ngIf='isDrawing'>
-                <button type='button' class='btn map-drawing-btn mb-2'  [disabled]="!isDungeonMaster" (click)='clearMap()'>Clear Map</button>
+            <button type='button' class='btn add-character-btn controls-button' (click)='openNewCharacterDialogue()'>New Character</button>
+            <button type='button' class='btn map-drawing-btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Upload Map' : 'Draw Map' }}</button>
+            <div *ngIf='isDrawing' class='paint-container'>
+                <button type='button controls-button' class='btn clear-map-btn controls-button'  [disabled]="!isDungeonMaster" (click)='clearMap()'>Clear Map</button>
                 <div>
                     <h3 for="colorpicker" class='mb-0'>Brush Color</h3>
-                    <input type="color" id="colorpicker" name="paintBrushColor" #paintBrushColorInput value={{this.paintBrushColor}} (click)='changeBrushColor(paintBrushColorInput.value)'>
+                    <input type="color" id="colorpicker"  class="controls-button" name="paintBrushColor" #paintBrushColorInput value={{this.paintBrushColor}} (click)='changeBrushColor(paintBrushColorInput.value)'>
                     <h3 for="colorpicker" class='mb-0'>Brush Width {{this.paintBrushSize}}</h3>                    
-                    <input type="range" id="paintBrushSizeSlider" min="1" max="100" default='10' value={{this.paintBrushSize}} class="slider" #paintBrushSizeInput (click)='changeBrushSize(paintBrushSizeInput.value)'>
+                    <input type="range" id="paintBrushSizeSlider" class="slider controls-button" min="1" max="100" default='10' value={{this.paintBrushSize}} #paintBrushSizeInput (click)='changeBrushSize(paintBrushSizeInput.value)'>
                 </div>
-            </ng-container>
-            <div>
+            </div>
+            <div class='text-center'>
                 <h3 for="colorpicker" class='mb-0'>Map Background</h3>
-                <input type="color" id="colorpicker" name="mapColor" #mapColor value='#2f323b' (click)='updateMapBackground(mapColor.value)'>
+                <input type="color" id="colorpicker" name="mapColor" class="controls-button" #mapColor value='#2f323b' (click)='updateMapBackground(mapColor.value)'>
             </div>
         </div>
-        <a class='white-btn btn mb-2' href='http://dnd5e.wikidot.com/' target="_blank">Dnd Wiki</a>
-        <a class='btn save-button mb-2' title="Download Game Data as JSON" [href]="downloadJsonHref" (click)='saveGame()' download="game-data.json">Save Game</a>
-        <button type='button' class='mt-3 mb-2 btn btn-sm red-btn' (click)='disconnect()'>Disconnect</button>
+        <div class="d-flex flex-column align-items-center">
+            <a class='btn save-button controls-button' (click)='refresh()'>Refresh</a>
+            <a class='btn dnd-wiki-button controls-button' href='http://dnd5e.wikidot.com/' target="_blank">D&D Wiki</a>
+            <a class='btn save-button controls-button' title="Download Game Data as JSON" [href]="downloadJsonHref" (click)='saveGame()' download="game-data.json">Save Game</a>
+            <button type='button' class='mt-3 btn btn-sm red-btn controls-button' (click)='disconnect()'>Disconnect</button>
+        </div>
+        
     </div>
     
 </div>
