@@ -30,22 +30,20 @@ textarea:focus, input:focus{
 /* Material Dialog style - All other dialgo styles are set in dialog.css*/
 .mat-dialog-container {
   background-color: #2F323B !important;
+  color: white !important;
 }
 
 .green-btn {
   background-color: #6cae75 !important;
   color: white !important;
-  width: 120px;
 }
 
 .white-btn {
   border: 1px solid white !important;
   color: white !important;
-  width: 120px;
 }
 
 .red-btn {
   background-color: red !important;
   color: white !important;
-  width: 120px;
 }

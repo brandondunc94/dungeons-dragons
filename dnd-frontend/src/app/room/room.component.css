@@ -234,7 +234,7 @@
     border: 1px solid #c54 !important;
 }
 .selected-character-card {
-    border: 3px solid gold;
+    border: 2px solid gold;
 }
 .health-bar {
     -webkit-box-sizing: border-box;
@@ -261,11 +261,11 @@
     color: black;
     padding: 5px;
     border-radius: 10px;
+    width: 80%;
 }
 .clear-map-btn {
     background-color: white;
     border-color: black;
-
 }
 .controls-button {
     width: 120px;
@@ -292,7 +292,7 @@
 .dnd-wiki-button {
     background-color: white;
 }
-.save-button {
+.green-button {
     background-color: transparent;
     border: 1px solid #6cae75;
     color: white;
@@ -301,6 +301,10 @@
     background-color: transparent;
     border: 1px solid #6cae75;
     color: white;
+}
+.combat-controls {
+    border: 2px solid gold;
+    width: 85%;
 }
 /*Paint brush slider*/
 .slider {
