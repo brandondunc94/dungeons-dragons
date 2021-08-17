@@ -272,6 +272,7 @@
 .paint-button {
     width: 95%;
     margin-bottom: 5px;
+    border: 1px solid black;
 }
 .controls-button {
     background-color: transparent;
@@ -292,9 +293,6 @@
 .map-upload-btn {
     background-color: #6cae75;
     border: 1px solid #6cae75;
-}
-.dnd-wiki-button {
-    background-color: white;
 }
 .green-button {
     background-color: transparent;
