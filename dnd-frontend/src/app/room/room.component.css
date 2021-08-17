@@ -274,6 +274,10 @@
     margin-bottom: 5px;
 }
 .controls-button {
+    background-color: transparent;
+    border: 1px solid white;
+    color: white;
+    font-size: 14px;
     width: 120px;
     margin-bottom: 10px;
 }
@@ -284,12 +288,6 @@
     font-size: 14px;
     padding-left: 0;
     padding-right: 0;
-}
-.map-drawing-btn {
-    background-color: transparent;
-    border: 1px solid white;
-    color: white;
-    font-size: 14px;
 }
 .map-upload-btn {
     background-color: #6cae75;

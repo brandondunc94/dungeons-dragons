@@ -37,7 +37,7 @@
     </div>
     <div class='col-xxl-8 col-xl-7 col-lg-8 col-md-7 col-sm-7 d-flex flex-column p-0 map-container'>
         <div #map class='map grid dndDragzone'>
-            <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone]>
+            <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone] (dndDrop)='onCharacterDrop($event,i)'>
                 <ng-container *ngFor='let character of characters'>
                     <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC', 'selected-character' : this.selectedCharacter === character}">
                         <div class='draggable'
@@ -57,8 +57,9 @@
         <div class='d-flex flex-column flex-fill mt-3 align-items-center'>
             <h3>Controls</h3>
             <button type='button' class='btn add-character-btn controls-button' (click)='openNewCharacterDialogue()'>New Character</button>
-            <button type='button' class='btn map-drawing-btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Stop Drawing' : 'Start Drawing' }}</button>
-            <button type='button' class='btn map-drawing-btn controls-button'  [disabled]="!isDungeonMaster" (click)='setCombatOrder()'>Start Combat</button>
+            <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Stop Drawing' : 'Start Drawing' }}</button>
+            <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleCharacterDragAndDrop()'>{{ isCharacterDragAndDrop ? 'Character Move On' : 'Character Move Off' }}</button>
+            <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='setCombatOrder()'>Start Combat</button>
             <div *ngIf='isDrawing' class='paint-container'>
             <button type='button' class='btn clear-map-btn paint-button'  [disabled]="!isDungeonMaster" (click)='uploadCanvas()'>Upload Map</button>
                 <button type='button' class='btn clear-map-btn paint-button'  [disabled]="!isDungeonMaster" (click)='clearCanvas()'>Clear Map</button>

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter, AfterViewChecked } from '@angular/core';
 import { DomSanitizer} from '@angular/platform-browser';
-// import { DndDropEvent } from 'ngx-drag-drop';
+import { DndDropEvent } from 'ngx-drag-drop';
 import { RoomWebsocketService } from "../room-websocket.service";
 
 import { ModalComponent } from '../modal/modal.component';
@@ -38,6 +38,7 @@ export class RoomComponent implements OnInit, AfterViewChecked {
   @ViewChild('map', {static: true}) map!:ElementRef; // Reference to map in DOM
   @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D | null;
+  isCharacterDragAndDrop = false;
   canvasBackgroundImage!: string;
   isDrawing!: boolean;
   mapDimension = 20;
@@ -110,15 +111,28 @@ export class RoomComponent implements OnInit, AfterViewChecked {
     this.map.nativeElement.style.backgroundColor = mapColor;
   }
 
-  // onCharacterDrop(event:DndDropEvent, squareIndex: number) { DISABLED FOR NOW SINCE CANVAS BREAKS THE DRAG & DROP FUNCTIONALITY
-  // THIS IS WHAT WOULD GO IN THE TEMPLATE on a map square - (dndDrop)='onCharacterDrop($event,i)'
-  //   let characterDropped = this.characters.find(character => character.id === event.data.id); // Find character in array
-  //   if (characterDropped && squareIndex > -1){
-  //     characterDropped.position = squareIndex;
-  //     this.roomService.roomDataUpdate.next(); // Send update to server
-  //     console.log(characterDropped);
-  //   }
-  // }
+  toggleCharacterDragAndDrop() {
+    this.isCharacterDragAndDrop = !this.isCharacterDragAndDrop; // Flip flag
+    if(this.isCharacterDragAndDrop) {
+      //Enable character drag and drop by moving map in front of canvas
+      this.map.nativeElement.style.zIndex = '2';
+      this.canvas.nativeElement.style.zIndex = '1';
+    } else {
+      //Move canvas back to the front to disabled character drag and drop
+      this.map.nativeElement.style.zIndex = '1';
+      this.canvas.nativeElement.style.zIndex = '2';
+    }
+  }
+
+  onCharacterDrop(event:DndDropEvent, squareIndex: number) {
+    let characterDropped = this.characters.find(character => character.id === event.data.id); // Find character in array
+    if (characterDropped && squareIndex > -1){
+      characterDropped.position = squareIndex;
+      this.gameService.createUpdateCharacter(this.roomCode, characterDropped).then(() => {
+        this.sendWebsocketUpdate();
+      }); // Send update to server
+    }
+  }
 
   getLatestCanvas() { // Retrieve the latest canvas image from the server and draw it on the canvas
     let newCanvas = new Image();
@@ -215,7 +229,9 @@ export class RoomComponent implements OnInit, AfterViewChecked {
           x: res[1].clientX - rect.left,
           y: res[1].clientY - rect.top
         };
-        this.drawOnCanvas(prevPos, currentPos);
+        if(this.isDrawing){
+          this.drawOnCanvas(prevPos, currentPos);
+        }
       });
   }
 
