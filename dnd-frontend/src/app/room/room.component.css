@@ -229,6 +229,7 @@
 }
 .character-card {
     cursor: pointer;
+    box-shadow: 2px 2px 5px grey;
 }
 .card-npc {
     border: 1px solid #c54 !important;
