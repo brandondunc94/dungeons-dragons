@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter }
 import { DomSanitizer} from '@angular/platform-browser';
 // import { DndDropEvent } from 'ngx-drag-drop';
 import { RoomWebsocketService } from "../room-websocket.service";
-import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
+
 import { ModalComponent } from '../modal/modal.component';
 import { GameDataService, Character, Message } from '../game-data.service';
 import { fromEvent } from 'rxjs';
@@ -11,10 +11,14 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 
+//Modals
+import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
+import { CombatModalComponent } from '../modal/combat-modal/combat-modal.component';
+
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
-  styleUrls: ['./room.component.css']
+  styleUrls: ['./room.component.css'],
 })
 export class RoomComponent implements OnInit {
 
@@ -23,7 +27,6 @@ export class RoomComponent implements OnInit {
   @Input() roomCode!: string;
   @Output() isPlaying = new EventEmitter<boolean>(); // Used for going back to home splash page
   characters!: Array<Character>; // Track all characters in room
-  selectedCharacter!: Character | null;
   messages!: Message[];
 
   @ViewChild('messageInputField') messageInputField!: ElementRef; // Reference to message input field in DOM
@@ -37,9 +40,14 @@ export class RoomComponent implements OnInit {
   isDrawing!: boolean;
   mapDimension = 20;
   mapColor = '#2f323b'; // Default dark grey as map background
-  paintBrushColor = '#ffffff'; // Default paint brush color to brown
+  paintBrushColor = '#ffffff'; // Default paint brush color to white
   paintBrushSize = 10;
   squareSideLength = 80; // Size of each grid square measured in pixels
+
+  //Combat values
+  inCombat!: boolean;
+  combatTurn!: number;
+  selectedCharacter!: Character | null;
 
   //Init toast notification object
   toast = Swal.mixin({
@@ -112,12 +120,12 @@ export class RoomComponent implements OnInit {
     newCanvas.src = environment.canvasImageUrl + this.roomCode + '.png?dummy=' + new Date().getTime();
     console.log('Retrieving canvas at url ' + newCanvas.src);
     newCanvas.onload = () => {
-      this.clearMap();
+      this.clearCanvas();
       this.ctx!.drawImage(newCanvas,0,0);   
     }
   }
 
-  clearMap() { // Clear the map of all drawings
+  clearCanvas() { // Clear the map of all drawings
     this.ctx!.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
 
     // Draw small circle in top left
@@ -142,29 +150,30 @@ export class RoomComponent implements OnInit {
       // Start capturing canvas drawing from user
       this.captureCanvasDrawing(this.canvas.nativeElement);
     }
-    if (!this.isDrawing) { // Finished drawing, save and upload canvas to server
-      if (this.ctx != null) {
-        let canvasImage = this.canvas.nativeElement.toDataURL("canvas/png");
-        canvasImage.replace(/^data:image\/(png|jpg);base64,/, "");
+  }
 
-        this.canvas.nativeElement.toBlob( // Convert canvas to blob
-          blob => {
-            if(blob){
-               // Upload the canvas image to the server
-              this.gameService.uploadCanvasImage(blob, this.roomCode).then(() => {
-                this.toast.fire({
-                  icon: 'success',
-                  iconColor: 'green',
-                  title: 'Map uploaded successfully'
-                })
-                this.sendWebsocketUpdate(); // Tell other players the map has been updated
-              });
-            }
-          },
-          'image/png',
-          0.9,
-        );
-      }
+  uploadCanvas() {
+    if (this.ctx != null) {
+      let canvasImage = this.canvas.nativeElement.toDataURL("canvas/png");
+      canvasImage.replace(/^data:image\/(png|jpg);base64,/, "");
+
+      this.canvas.nativeElement.toBlob( // Convert canvas to blob
+        blob => {
+          if(blob){
+             // Upload the canvas image to the server
+            this.gameService.uploadCanvasImage(blob, this.roomCode).then(() => {
+              this.toast.fire({
+                icon: 'success',
+                iconColor: 'green',
+                title: 'Map uploaded successfully'
+              })
+              this.sendWebsocketUpdate(); // Tell other players the map has been updated
+            });
+          }
+        },
+        'image/png',
+        0.9,
+      );
     }
   }
 
@@ -318,6 +327,68 @@ export class RoomComponent implements OnInit {
     return (health/maxHealth) * 100;
   }
 
+  // Combat related methods
+  setCombatOrder() {
+    // Open dialog box
+    const dialogConfig = new MatDialogConfig();
+    // The user can't close the dialog by clicking outside its body
+    dialogConfig.disableClose = true;
+    dialogConfig.id = "modal-component";
+    dialogConfig.height = "600px";
+    dialogConfig.width = "600px";
+    dialogConfig.data = {
+      characters: this.characters
+    }
+
+    // https://material.angular.io/components/dialog/overview
+    const modalDialog = this.matDialog.open(CombatModalComponent, dialogConfig);
+
+    modalDialog.afterClosed().subscribe(characters => { 
+      if(characters){
+        this.characters = characters;
+        this.gameService.updateCharacters(this.roomCode, this.characters).then(response => {
+          this.startCombat(); // Trigger the start of combat
+        });
+      }
+    }
+    )
+
+  }
+
+  startCombat() {
+    this.gameService.toggleCombat(this.roomCode, true).then( () => {
+      this.sendWebsocketUpdate();
+    });
+  }
+
+  nextCombatTurn() {
+    if(this.combatTurn === this.characters.length - 1) {
+      this.combatTurn = 0; // Reset combat to first character
+    } else {
+      this.combatTurn ++;
+    }
+    this.gameService.changeCombatTurn(this.roomCode, this.combatTurn).then( () => {
+      this.sendWebsocketUpdate();
+    });
+  }
+
+  previousCombatTurn() {
+    if(this.combatTurn === 0) {
+      this.combatTurn = this.characters.length - 1; // Set to last character in combat order
+    } else {
+      this.combatTurn--; // Decrement current combat turn by 1
+    }
+    this.gameService.changeCombatTurn(this.roomCode, this.combatTurn).then( () => {
+      this.sendWebsocketUpdate();
+    });
+  }
+
+  stopCombat() {
+    this.gameService.toggleCombat(this.roomCode, false).then( () => {
+      this.sendWebsocketUpdate();
+    });
+  }
+
   // Chat methods
   sendMessage(message: string) {
     if (message != '') {
@@ -344,7 +415,16 @@ export class RoomComponent implements OnInit {
     this.gameService.getCharacters(this.roomCode).then(response => {
       this.characters = response;
       console.log(this.characters);
+
+      this.gameService.getGameMetaData(this.roomCode).then(response2 => {
+        this.inCombat = response2.inCombat;
+        if(this.inCombat) {
+          this.combatTurn = response2.combatTurn;
+          this.selectedCharacter = this.characters[this.combatTurn];
+        }
+      })
     })
+    
     this.gameService.getMessages(this.roomCode).then(response => {
       this.messages = response;
       console.log(this.messages);

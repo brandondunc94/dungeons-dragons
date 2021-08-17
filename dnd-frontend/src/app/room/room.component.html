@@ -1,8 +1,8 @@
-<div class='row h-100'>
+<div class='row h-100 w-100 m-0'>
     <div class='col-3 stats-chat'>
         <div class='stats-box'>
             <h2 class='text-center'>Characters</h2>
-            <div *ngFor='let character of characters' class='card p-1 character-card' (click)='openUpdateCharacterDialogue(character)' [ngClass]="{'card-npc' : character.type === 'NPC'}">
+            <div *ngFor='let character of characters' [ngClass]='{"selected-character-card" : this.selectedCharacter === character}' class='card p-1 character-card' (click)='openUpdateCharacterDialogue(character)' [ngClass]="{'card-npc' : character.type === 'NPC'}">
                 <div class='d-flex flex-column'>
                     <div class='d-flex flex-row'>
                         <h3 class='flex-grow-1 m-0'>{{character.name}}</h3>
@@ -57,9 +57,11 @@
         <div class='d-flex flex-column flex-fill mt-3 align-items-center'>
             <h3>Controls</h3>
             <button type='button' class='btn add-character-btn controls-button' (click)='openNewCharacterDialogue()'>New Character</button>
-            <button type='button' class='btn map-drawing-btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Upload Map' : 'Draw Map' }}</button>
+            <button type='button' class='btn map-drawing-btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Stop Drawing' : 'Start Drawing' }}</button>
+            <button type='button' class='btn map-drawing-btn controls-button'  [disabled]="!isDungeonMaster" (click)='setCombatOrder()'>Start Combat</button>
             <div *ngIf='isDrawing' class='paint-container'>
-                <button type='button controls-button' class='btn clear-map-btn controls-button'  [disabled]="!isDungeonMaster" (click)='clearMap()'>Clear Map</button>
+            <button type='button' class='btn clear-map-btn controls-button'  [disabled]="!isDungeonMaster" (click)='uploadCanvas()'>Upload Map</button>
+                <button type='button' class='btn clear-map-btn controls-button'  [disabled]="!isDungeonMaster" (click)='clearCanvas()'>Clear Map</button>
                 <div>
                     <h3 for="colorpicker" class='mb-0'>Brush Color</h3>
                     <input type="color" id="colorpicker"  class="controls-button" name="paintBrushColor" #paintBrushColorInput value={{this.paintBrushColor}} (click)='changeBrushColor(paintBrushColorInput.value)'>
@@ -67,15 +69,23 @@
                     <input type="range" id="paintBrushSizeSlider" class="slider controls-button" min="1" max="100" default='10' value={{this.paintBrushSize}} #paintBrushSizeInput (click)='changeBrushSize(paintBrushSizeInput.value)'>
                 </div>
             </div>
-            <div class='text-center'>
-                <h3 for="colorpicker" class='mb-0'>Map Background</h3>
-                <input type="color" id="colorpicker" name="mapColor" class="controls-button" #mapColor value='#2f323b' (click)='updateMapBackground(mapColor.value)'>
-            </div>
+        </div>
+        <div *ngIf='inCombat' class='d-flex flex-column flex-fill align-items-center'>
+            <div class='combat-controls text-center'>
+                <h3>Combat</h3>
+                <button type='button' class='btn controls-button white-btn' (click)='nextCombatTurn()'>Next Turn</button>
+                <button type='button' class='btn controls-button white-btn' (click)='previousCombatTurn()'>Previous Turn</button>
+                <button type='button' class='btn controls-button green-btn' (click)='stopCombat()'>End Combat</button>  
+            </div>    
+        </div>
+        <div class='text-center'>
+            <h3 for="colorpicker" class='mb-0'>Map Background</h3>
+            <input type="color" id="colorpicker" name="mapColor" class="controls-button" #mapColor value='#2f323b' (click)='updateMapBackground(mapColor.value)'>
         </div>
         <div class="d-flex flex-column align-items-center">
-            <a class='btn save-button controls-button' (click)='refresh()'>Refresh</a>
+            <a class='btn green-button controls-button' (click)='refresh()'>Refresh</a>
             <a class='btn dnd-wiki-button controls-button' href='http://dnd5e.wikidot.com/' target="_blank">D&D Wiki</a>
-            <a class='btn save-button controls-button' title="Download Game Data as JSON" [href]="downloadJsonHref" (click)='saveGame()' download="game-data.json">Save Game</a>
+            <a class='btn green-button controls-button' title="Download Game Data as JSON" [href]="downloadJsonHref" (click)='saveGame()' download="game-data.json">Save Game</a>
             <button type='button' class='mt-3 btn btn-sm red-btn controls-button' (click)='disconnect()'>Disconnect</button>
         </div>
         

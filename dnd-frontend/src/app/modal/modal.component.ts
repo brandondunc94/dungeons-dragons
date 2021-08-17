@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, Input } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { GameDataService, Character } from '../game-data.service';
 import { DndApiService } from '../dnd-api.service';
+import {v4 as uuidv4} from 'uuid';
 
 @Component({
   selector: 'app-modal',
@@ -27,6 +28,9 @@ export class ModalComponent implements OnInit {
   ngOnInit() {}
 
   saveCreateCharacter() {
+    if(this.character.id === '') { // If this is a new character, the id will be blank and we need to pass a uuid to the backend
+      this.character.id = uuidv4();
+    }
     this.dialogRef.close({'status': 'CREATE/UPDATE', 'character': this.character}); // Pass new/updated character back to parent component
   }
 

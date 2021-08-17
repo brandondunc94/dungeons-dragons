@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { map } from 'rxjs/operators';
@@ -17,6 +17,7 @@ export class Character {
   position!: number;
   type!: string; // PC or NPC
   characterClass!: string;
+  combatTurn!: number;
 
   constructor() {
     this.game_id = '',
@@ -26,7 +27,8 @@ export class Character {
     this.maxHealth = 0,
     this.position = 0,
     this.type = 'NPC', // Default to NPC
-    this.characterClass = ''
+    this.characterClass = '',
+    this.combatTurn = 0
   }
 }
 
@@ -45,15 +47,29 @@ export class GameDataService {
   public CANVAS_URL = environment.canvasImageUpload;
 
   headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { 
+
+  }
 
   checkExistingRoom(roomCode: string) {
-    console.log('Checking if this room code is a previous game...');
+    console.log('Checking if this room code is a previous game with room code ' + roomCode);
     let promise = new Promise<string>((resolve,reject) => {
       this.http.get<any>(this.API_URL  + 'check/' + roomCode)
       .toPromise()
       .then(response => {
         resolve(response.status);
+      }
+      );
+    });
+    return promise;
+  }
+
+  getGameMetaData(roomCode: string) {
+    let promise = new Promise<any>((resolve,reject) => {
+      this.http.get<any>(this.API_URL  + 'game_metadata/' + roomCode)
+      .toPromise()
+      .then(response => {
+        resolve(response.game);
       }
       );
     });
@@ -74,12 +90,25 @@ export class GameDataService {
   }
   
   createUpdateCharacter(roomCode: string, character: Character) {
-    console.log('Creating new character for room ' + roomCode);
     let apiEndpoint = 'create_update_character/' + roomCode + '/';
     if(character.id != '') {
       apiEndpoint += character.id + '/';
     }
     let body = JSON.stringify(character);
+    let promise = new Promise<string>((resolve,reject) => {
+      this.http.post<any>(this.API_URL  + apiEndpoint, body, {headers: this.headers})
+      .toPromise()
+      .then(response => {
+        resolve(response.status);
+      }
+      );
+    });
+    return promise;
+  }
+
+  updateCharacters(roomCode: string, characters: Character[]) {
+    let apiEndpoint = 'update_characters/' + roomCode + '/';
+    let body = JSON.stringify(characters);
     let promise = new Promise<string>((resolve,reject) => {
       this.http.post<any>(this.API_URL  + apiEndpoint, body, {headers: this.headers})
       .toPromise()
@@ -157,4 +186,28 @@ export class GameDataService {
     return promise;
   }
 
+  // Combat-related api calls
+  toggleCombat(roomCode: string, combatFlag: boolean) {
+    let promise = new Promise<Message[]>((resolve,reject) => {
+      this.http.get<any>(this.API_URL  + 'toggle_combat/' + roomCode + '/' + combatFlag + '/')
+      .toPromise()
+      .then(response => {
+        resolve(response);
+      }
+      );
+    });
+    return promise;
+  }
+
+  changeCombatTurn(roomCode: string, combatTurn: number) {
+    let promise = new Promise<Message[]>((resolve,reject) => {
+      this.http.get<any>(this.API_URL  + 'change_combat_turn/' + roomCode + '/' + combatTurn + '/')
+      .toPromise()
+      .then(response => {
+        resolve(response);
+      }
+      );
+    });
+    return promise;
+  }
 }
