@@ -73,9 +73,9 @@
         <div *ngIf='inCombat' class='d-flex flex-column flex-fill align-items-center'>
             <div class='combat-controls text-center'>
                 <h3>Combat</h3>
-                <button type='button' class='btn controls-button white-btn' (click)='nextCombatTurn()'>Next Turn</button>
-                <button type='button' class='btn controls-button white-btn' (click)='previousCombatTurn()'>Previous Turn</button>
-                <button type='button' class='btn controls-button green-btn' (click)='stopCombat()'>End Combat</button>  
+                <button type='button' class='btn controls-button white-btn' [disabled]="!isDungeonMaster" (click)='nextCombatTurn()'>Next Turn</button>
+                <button type='button' class='btn controls-button white-btn' [disabled]="!isDungeonMaster" (click)='previousCombatTurn()'>Previous Turn</button>
+                <button type='button' class='btn controls-button green-btn' [disabled]="!isDungeonMaster" (click)='stopCombat()'>End Combat</button>  
             </div>    
         </div>
         <div class='text-center'>
