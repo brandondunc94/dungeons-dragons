@@ -18,7 +18,7 @@
         <section class='chat-box'>
             <h2 class='text-center mb-0'>Chat</h2>
             <section #chatWindow class='chat-window'>
-                <article *ngFor='let message of messages' [ngClass]='{"msg-self" : (message.author === username)}' class='msg-container'>
+                <article *ngFor='let message of messages' [ngClass]='{"msg-self" : (message.author.toUpperCase() === username.toUpperCase())}' class='msg-container'>
                     <div class='msg-box'>
                         <div class='flr'>
                             <div class='messages'>
@@ -58,7 +58,7 @@
             <h3>Controls</h3>
             <button type='button' class='btn add-character-btn controls-button' (click)='openNewCharacterDialogue()'>New Character</button>
             <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Stop Drawing' : 'Start Drawing' }}</button>
-            <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleCharacterDragAndDrop()'>{{ isCharacterDragAndDrop ? 'Character Move On' : 'Character Move Off' }}</button>
+            <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleCharacterDragAndDrop()' [ngClass]="{'green-btn' : isCharacterDragAndDrop }">{{ isCharacterDragAndDrop ? 'Character Move On' : 'Character Move Off' }}</button>
             <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='setCombatOrder()'>Start Combat</button>
             <div *ngIf='isDrawing' class='paint-container'>
             <button type='button' class='btn clear-map-btn paint-button'  [disabled]="!isDungeonMaster" (click)='uploadCanvas()'>Upload Map</button>
