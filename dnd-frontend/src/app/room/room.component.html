@@ -57,8 +57,8 @@
         <div class='d-flex flex-column flex-fill mt-3 align-items-center'>
             <h3>Controls</h3>
             <button type='button' class='btn add-character-btn controls-button' (click)='openNewCharacterDialogue()'>New Character</button>
+            <button type='button' class='btn controls-button' (click)='toggleCharacterDragAndDrop()' [ngClass]="{'green-btn' : isCharacterDragAndDrop }">{{ isCharacterDragAndDrop ? 'Character Drag On' : 'Character Drag Off' }}</button>
             <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Stop Drawing' : 'Start Drawing' }}</button>
-            <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleCharacterDragAndDrop()' [ngClass]="{'green-btn' : isCharacterDragAndDrop }">{{ isCharacterDragAndDrop ? 'Character Move On' : 'Character Move Off' }}</button>
             <button type='button' class='btn controls-button'  [disabled]="!isDungeonMaster" (click)='setCombatOrder()'>Start Combat</button>
             <div *ngIf='isDrawing' class='paint-container'>
             <button type='button' class='btn clear-map-btn paint-button'  [disabled]="!isDungeonMaster" (click)='uploadCanvas()'>Upload Map</button>
