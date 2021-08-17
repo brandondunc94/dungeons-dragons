@@ -280,7 +280,24 @@ export class RoomComponent implements OnInit {
           titleText: 'Character deleted successfully.'
           })
         this.sendWebsocketUpdate(); // Send update to websocket
-      }
+      } else if (modalResult.status === 'COPY') { // Character was copied
+        this.gameService.createUpdateCharacter(this.roomCode, modalResult.character).then(status => {
+          if(status == 'SUCCESS') {
+            this.sendWebsocketUpdate(); // Send update to websocket
+            this.toast.fire({ //Fire success toast
+            icon: 'success',
+            iconColor: 'green',
+            titleText: 'Character copied successfully.'
+            })
+          } else {
+            this.toast.fire({ // Fire error toast
+              icon: 'error',
+              iconColor: 'red',
+              titleText: 'Unable to copy character.'
+              })
+          }
+        });
+      } 
     });
 
   }

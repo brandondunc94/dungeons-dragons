@@ -37,6 +37,7 @@
     </section>
     <footer id="modal-footer">
         <button class='btn green-btn m-2' (click)="saveCreateCharacter()">{{modalData.actionButtonText}}</button>
+        <button class='btn green-btn m-2' *ngIf='modalData.name === "update-character"' (click)="copyCharacter()">Copy</button>
         <button class='btn red-btn m-2' *ngIf='modalData.name === "update-character"' (click)="deleteCharacter()">Delete</button>
         <button class='btn white-btn m-2' (click)="cancel()">Cancel</button>
     </footer>

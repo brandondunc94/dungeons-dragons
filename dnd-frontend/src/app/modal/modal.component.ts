@@ -34,6 +34,11 @@ export class ModalComponent implements OnInit {
     this.dialogRef.close({'status': 'CREATE/UPDATE', 'character': this.character}); // Pass new/updated character back to parent component
   }
 
+  copyCharacter() {
+    this.character.id = uuidv4(); // Generate uuid for new character copy
+    this.dialogRef.close({'status': 'COPY', 'character': this.character}); // Pass new/updated character back to parent component
+  }
+
   deleteCharacter() {
     console.log('Deleting Character ' + this.character.name);
     // Call API to delete character from DB
