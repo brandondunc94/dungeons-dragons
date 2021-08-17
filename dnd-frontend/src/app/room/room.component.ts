@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter, AfterViewChecked } from '@angular/core';
 import { DomSanitizer} from '@angular/platform-browser';
 // import { DndDropEvent } from 'ngx-drag-drop';
 import { RoomWebsocketService } from "../room-websocket.service";
@@ -20,14 +20,16 @@ import { CombatModalComponent } from '../modal/combat-modal/combat-modal.compone
   templateUrl: './room.component.html',
   styleUrls: ['./room.component.css'],
 })
-export class RoomComponent implements OnInit {
+export class RoomComponent implements OnInit, AfterViewChecked {
 
   @Input() username!: string; // Track current user
   @Input() isDungeonMaster!: boolean;
   @Input() roomCode!: string;
   @Output() isPlaying = new EventEmitter<boolean>(); // Used for going back to home splash page
   characters!: Array<Character>; // Track all characters in room
-  messages!: Message[];
+
+  messages!: Message[]; // Array of messages
+  @ViewChild('chatWindow') chatContainer!: ElementRef; // Reference to chat container in DOM
 
   @ViewChild('messageInputField') messageInputField!: ElementRef; // Reference to message input field in DOM
 
@@ -88,6 +90,10 @@ export class RoomComponent implements OnInit {
       this.getLatestGameData();
       console.log("Received update from websocket.");
     });
+  }
+
+  ngAfterViewChecked() {        
+    this.scrollToChatBottom();        
   }
 
   // Map Methods
@@ -422,6 +428,12 @@ export class RoomComponent implements OnInit {
     }
     this.messageInputField.nativeElement.value = ''; // Reset input field
   }
+
+  scrollToChatBottom(): void { // Scroll to bottom of chat
+    try {
+        this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    } catch(err) { }                 
+}
 
   // Game data Websocket and API methods
   private sendWebsocketUpdate() { // Sends update notice to websocket

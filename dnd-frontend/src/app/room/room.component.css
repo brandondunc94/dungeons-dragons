@@ -27,10 +27,11 @@
     position: relative;
 }
 .map-character {
-    height: 80%; 
-    width: 80%; 
+    height: 85%; 
+    width: 85%; 
     background-color: #2671ff; 
-    border-radius: 50%; 
+    border-radius: 50%;
+    border: 1px solid white;
     margin: 0 auto; 
     margin-top: 5px; 
     text-align: center; 
@@ -267,6 +268,10 @@
 .clear-map-btn {
     background-color: white;
     border-color: black;
+}
+.paint-button {
+    width: 95%;
+    margin-bottom: 5px;
 }
 .controls-button {
     width: 120px;

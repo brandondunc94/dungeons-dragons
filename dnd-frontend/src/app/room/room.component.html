@@ -17,7 +17,7 @@
         </div>
         <section class='chat-box'>
             <h2 class='text-center mb-0'>Chat</h2>
-            <section class='chat-window'>
+            <section #chatWindow class='chat-window'>
                 <article *ngFor='let message of messages' [ngClass]='{"msg-self" : (message.author === username)}' class='msg-container'>
                     <div class='msg-box'>
                         <div class='flr'>
@@ -53,20 +53,20 @@
         <canvas #canvas class='canvas'>
         </canvas>
     </div>
-    <div class='col-xxl-1 col-xl-2 col-lg-2 col-md-2 col-sm-2 d-flex flex-column p-0 action-panel'>
+    <div class='col-xxl-1 col-xl-1 col-lg-1 col-md-2 col-sm-2 d-flex flex-column p-0 action-panel'>
         <div class='d-flex flex-column flex-fill mt-3 align-items-center'>
             <h3>Controls</h3>
             <button type='button' class='btn add-character-btn controls-button' (click)='openNewCharacterDialogue()'>New Character</button>
             <button type='button' class='btn map-drawing-btn controls-button'  [disabled]="!isDungeonMaster" (click)='toggleMapDrawing()' [ngClass]="{'map-upload-btn' : isDrawing }">{{ isDrawing ? 'Stop Drawing' : 'Start Drawing' }}</button>
             <button type='button' class='btn map-drawing-btn controls-button'  [disabled]="!isDungeonMaster" (click)='setCombatOrder()'>Start Combat</button>
             <div *ngIf='isDrawing' class='paint-container'>
-            <button type='button' class='btn clear-map-btn controls-button'  [disabled]="!isDungeonMaster" (click)='uploadCanvas()'>Upload Map</button>
-                <button type='button' class='btn clear-map-btn controls-button'  [disabled]="!isDungeonMaster" (click)='clearCanvas()'>Clear Map</button>
+            <button type='button' class='btn clear-map-btn paint-button'  [disabled]="!isDungeonMaster" (click)='uploadCanvas()'>Upload Map</button>
+                <button type='button' class='btn clear-map-btn paint-button'  [disabled]="!isDungeonMaster" (click)='clearCanvas()'>Clear Map</button>
                 <div>
                     <h3 for="colorpicker" class='mb-0'>Brush Color</h3>
-                    <input type="color" id="colorpicker"  class="controls-button" name="paintBrushColor" #paintBrushColorInput value={{this.paintBrushColor}} (click)='changeBrushColor(paintBrushColorInput.value)'>
+                    <input type="color" id="colorpicker"  class="paint-button" name="paintBrushColor" #paintBrushColorInput value={{this.paintBrushColor}} (click)='changeBrushColor(paintBrushColorInput.value)'>
                     <h3 for="colorpicker" class='mb-0'>Brush Width {{this.paintBrushSize}}</h3>                    
-                    <input type="range" id="paintBrushSizeSlider" class="slider controls-button" min="1" max="100" default='10' value={{this.paintBrushSize}} #paintBrushSizeInput (click)='changeBrushSize(paintBrushSizeInput.value)'>
+                    <input type="range" id="paintBrushSizeSlider" class="slider paint-button" min="1" max="100" default='10' value={{this.paintBrushSize}} #paintBrushSizeInput (click)='changeBrushSize(paintBrushSizeInput.value)'>
                 </div>
             </div>
         </div>
