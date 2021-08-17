@@ -10,3 +10,5 @@ dnd-frontend/.vscode/launch.json
 dnd-server/.vscode/launch.json
 dnd-frontend/src/temp
 dnd-server/media/
+.vscode/
+data/
