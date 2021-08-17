@@ -235,7 +235,7 @@
 .card-npc {
     border: 1px solid #c54 !important;
 }
-.selected-character-card {
+.selected-character {
     border: 2px solid gold;
 }
 .health-bar {

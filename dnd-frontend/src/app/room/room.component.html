@@ -2,7 +2,7 @@
     <div class='col-3 stats-chat'>
         <div class='stats-box'>
             <h2 class='text-center'>Characters</h2>
-            <div *ngFor='let character of characters' [ngClass]='{"selected-character-card" : this.selectedCharacter === character}' class='card p-1 character-card' (click)='openUpdateCharacterDialogue(character)' [ngClass]="{'card-npc' : character.type === 'NPC'}">
+            <div *ngFor='let character of characters' [ngClass]='{"selected-character" : this.selectedCharacter === character}' class='card p-1 character-card' (click)='openUpdateCharacterDialogue(character)' [ngClass]="{'card-npc' : character.type === 'NPC'}">
                 <div class='d-flex flex-column'>
                     <div class='d-flex flex-row'>
                         <h3 class='flex-grow-1 m-0'>{{character.name}}</h3>
@@ -39,7 +39,7 @@
         <div #map class='map grid dndDragzone'>
             <div *ngFor='let square of mapCounter(mapDimension); let i = index;' [style.height.px]='squareSideLength' class='map-square' [dndDropzone]>
                 <ng-container *ngFor='let character of characters'>
-                    <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC'}">
+                    <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-npc' : character.type === 'NPC', 'selected-character' : this.selectedCharacter === character}">
                         <div class='draggable'
                             [dndDraggable]='character'
                             (dblclick)='openUpdateCharacterDialogue(character)'
