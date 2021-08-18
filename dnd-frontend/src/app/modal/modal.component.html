@@ -25,13 +25,22 @@
         </div>
         <div class="form-group">
             <label for="character-type">Type</label>
-            <input [(ngModel)]="character.type" type="text" class="form-control" name='character-type' aria-describedby="characterType" placeholder="NPC">
+            <div class="form-group text-center">
+                <select class="form-select" aria-label="Character type" [(ngModel)]="character.type">
+                    <option value="PLAYER">Player</option>
+                    <option value="ALLY">Ally</option>
+                    <option value="ENEMY">Enemy</option>
+                </select>
+            </div>
         </div>
         <div class="form-group mt-1">
-            <label for="character-class" class='mr-2'>Class</label>
-            <select [(ngModel)]="character.characterClass" name='character-class' aria-describedby="character-class" class="form-control">
+            <label for="character-class" class='mr-2'>Class/Creature</label>
+            <select [(ngModel)]="character.characterClass" name='character-class' aria-describedby="character-class" class="form-control form-select">
+                <option disabled>**********Classes**********</option>
                 <option disabled [ngValue]='character.characterClass'>{{character.characterClass}}</option>
                 <option *ngFor='let currentClass of dndApiService.characterClasses' [ngValue]='currentClass.name'>{{currentClass.name}}</option>
+                <option disabled>**********Monsters**********</option>
+                <option *ngFor='let currentMonster of dndApiService.monsters' [ngValue]='currentMonster.name'>{{currentMonster.name}}</option>
             </select>
         </div>
     </section>

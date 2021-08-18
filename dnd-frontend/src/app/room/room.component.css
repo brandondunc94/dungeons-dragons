@@ -43,11 +43,14 @@
 .draggable {
     cursor: grab;
 }
-.map-npc {
+.map-enemy {
     background-color: #c54;
 }
+.map-ally {
+    background-color: #6CAE75;
+}
 .dndDragover {
-    background-color: #6cae75;
+    background-color: #6CAE75;
     color: black;
 }
 
@@ -232,8 +235,11 @@
     cursor: pointer;
     box-shadow: 2px 2px 5px grey;
 }
-.card-npc {
+.card-enemy {
     border: 1px solid #c54 !important;
+}
+.card-ally {
+    border: 1px solid #6CAE75 !important;
 }
 .selected-character {
     border: 2px solid gold;
