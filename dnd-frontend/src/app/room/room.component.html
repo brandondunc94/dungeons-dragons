@@ -44,9 +44,7 @@
                 <ng-container *ngFor='let character of characters'>
                     <div *ngIf='character.position === i' class='map-character' [ngClass]="{'map-enemy' : character.type === 'ENEMY', 'map-ally' : character.type === 'ALLY', 'selected-character' : this.selectedCharacter === character}">
                         <div class='draggable'
-                            [dndDraggable]='character'
-                            (dblclick)='openUpdateCharacterDialogue(character)'
-                            (click)='selectCharacter(character)'>{{character.name}}
+                            [dndDraggable]='character'>{{character.name}}
                         </div>
                     </div>
                 </ng-container>

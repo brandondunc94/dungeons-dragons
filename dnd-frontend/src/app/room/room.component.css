@@ -242,7 +242,7 @@
     border: 1px solid #6CAE75 !important;
 }
 .selected-character {
-    border: 2px solid gold;
+    border: 2px solid gold !important;
 }
 .health-bar {
     -webkit-box-sizing: border-box;
